@@ -37,6 +37,7 @@ interface GymValue {
   map: Map<string, LibraryExercise>;
   saveProgram: (program: Program) => Promise<void>;
   selectProgram: (id: string) => Promise<void>;
+  beginProgram: (id: string) => Promise<void>;
   saveWeek: (week: WeekPlan) => Promise<void>;
   saveSession: (session: Session) => Promise<void>;
   startSlot: (slotId: string) => Promise<string | null>;
@@ -51,6 +52,7 @@ interface GymValue {
   replaceInProgram: (dayId: string, fromId: string, toId: string) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
   deleteProgram: (id: string) => Promise<void>;
+  restartWeek: (id: string) => Promise<void>;
   clearAllData: () => Promise<void>;
 }
 
@@ -140,6 +142,7 @@ export function GymProvider({ children }: { children: ReactNode }) {
         id: "settings",
         unit: stored?.unit ?? "kg",
         activeProgramId: nextProgram.id,
+        ...(stored?.ongoingProgramId ? { ongoingProgramId: stored.ongoingProgramId } : {}),
       });
       const existing = await db.weeks.where("programId").equals(nextProgram.id).toArray();
       if (existing.length) await db.weeks.bulkDelete(existing.map((item) => item.id));
@@ -154,6 +157,21 @@ export function GymProvider({ children }: { children: ReactNode }) {
         id: "settings",
         unit: stored?.unit ?? "kg",
         activeProgramId: id,
+        ...(stored?.ongoingProgramId ? { ongoingProgramId: stored.ongoingProgramId } : {}),
+      });
+      const existing = await db.weeks.where("programId").equals(id).count();
+      if (existing === 0) await db.weeks.put(newWeek(chosen, 1));
+      await refresh();
+    },
+    async beginProgram(id) {
+      const chosen = await db.programs.get(id);
+      if (!chosen) return;
+      const stored = await db.settings.get("settings");
+      await db.settings.put({
+        id: "settings",
+        unit: stored?.unit ?? "kg",
+        activeProgramId: id,
+        ongoingProgramId: id,
       });
       const existing = await db.weeks.where("programId").equals(id).count();
       if (existing === 0) await db.weeks.put(newWeek(chosen, 1));
@@ -177,8 +195,22 @@ export function GymProvider({ children }: { children: ReactNode }) {
       const active = current.sessions.find(
         (session) => session.status === "active" && session.slotId === slotId,
       );
-      if (active) return active.id;
       const slot = current.week?.slots.find((item) => item.id === slotId);
+      if (!active && (!slot || !current.week)) return null;
+      const programId = current.program?.id;
+      const markOngoing = Boolean(programId && current.settings.ongoingProgramId !== programId);
+      if (markOngoing && programId) {
+        await db.settings.put({
+          id: "settings",
+          unit: current.settings.unit ?? "kg",
+          ...(current.settings.activeProgramId ? { activeProgramId: current.settings.activeProgramId } : {}),
+          ongoingProgramId: programId,
+        });
+      }
+      if (active) {
+        if (markOngoing) await refresh();
+        return active.id;
+      }
       if (!slot || !current.week) return null;
       const session = sessionFromSlot(
         slot,
@@ -243,7 +275,8 @@ export function GymProvider({ children }: { children: ReactNode }) {
       const next: Settings = {
         id: "settings",
         unit,
-        activeProgramId: stored?.activeProgramId,
+        ...(stored?.activeProgramId ? { activeProgramId: stored.activeProgramId } : {}),
+        ...(stored?.ongoingProgramId ? { ongoingProgramId: stored.ongoingProgramId } : {}),
       };
       await db.settings.put(next);
       setSettings(next);
@@ -365,16 +398,71 @@ export function GymProvider({ children }: { children: ReactNode }) {
         const stored = await db.settings.get("settings");
         const stillActive = remaining.some((item) => item.id === stored?.activeProgramId);
         const nextActive = stillActive ? stored?.activeProgramId : remaining[0]?.id;
+        const ongoing =
+          stored?.ongoingProgramId && stored.ongoingProgramId !== id ? stored.ongoingProgramId : undefined;
         await db.settings.put({
           id: "settings",
           unit: stored?.unit ?? "kg",
           ...(nextActive ? { activeProgramId: nextActive } : {}),
+          ...(ongoing ? { ongoingProgramId: ongoing } : {}),
         });
         if (nextActive) {
           const chosen = remaining.find((item) => item.id === nextActive);
           const weekCount = await db.weeks.where("programId").equals(nextActive).count();
           if (chosen && weekCount === 0) await db.weeks.put(newWeek(chosen, 1));
         }
+      });
+      await refresh();
+    },
+    async restartWeek(id) {
+      await enqueue(async () => {
+        const chosen = await db.programs.get(id);
+        if (!chosen) return;
+        const storedWeeks = await db.weeks.where("programId").equals(id).toArray();
+        const latest = [...storedWeeks].sort((a, b) => b.pass - a.pass)[0] ?? null;
+        const weekCount = chosen.weeks?.length ?? 0;
+        const index = chosen.weekIndex ?? 1;
+        const finished =
+          weekCount > 0 &&
+          index >= weekCount &&
+          latest != null &&
+          !latest.slots.some((slot) => slot.status === "pending");
+        const firstWeek = [...(chosen.weeks ?? [])].sort((a, b) => a.week - b.week)[0];
+        const nextProgram =
+          finished && firstWeek
+            ? { ...chosen, weekIndex: firstWeek.week, days: firstWeek.days }
+            : chosen;
+        if (nextProgram !== chosen) await db.programs.put(nextProgram);
+
+        if (latest) {
+          const slotIds = new Set(latest.slots.map((slot) => slot.id));
+          const sessions = await db.sessions.toArray();
+          const activeIds = sessions
+            .filter(
+              (session) =>
+                session.status === "active" &&
+                session.slotId != null &&
+                slotIds.has(session.slotId),
+            )
+            .map((session) => session.id);
+          if (activeIds.length) {
+            await db.sessions.bulkDelete(activeIds);
+            const remaining = sessions.filter((session) => !activeIds.includes(session.id));
+            applyPrs(remaining);
+            await db.sessions.bulkPut(remaining);
+          }
+          await db.weeks.delete(latest.id);
+        }
+
+        const pass = finished ? (latest?.pass ?? 0) + 1 : (latest?.pass ?? 1);
+        await db.weeks.put(newWeek(nextProgram, pass));
+        const stored = await db.settings.get("settings");
+        await db.settings.put({
+          id: "settings",
+          unit: stored?.unit ?? "kg",
+          activeProgramId: id,
+          ...(stored?.ongoingProgramId ? { ongoingProgramId: stored.ongoingProgramId } : {}),
+        });
       });
       await refresh();
     },

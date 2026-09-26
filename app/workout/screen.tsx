@@ -1,13 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
-import { ArrowLeftRightIcon, CheckIcon } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type UIEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { StackHeader } from "@/components/stack-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -16,19 +12,17 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Skeleton } from "@/components/ui/skeleton";
 import { Toggle } from "@/components/ui/toggle";
 import { useGym } from "@/lib/gym";
+import { PlanScreen } from "./plan-screen";
+import { ExerciseSlide, SubstitutionSheet, substitutionChoices } from "./exercise-slide";
 import {
   activeSessionForWeek,
   doneSetCount,
-  lastLoggedExercise,
   restMs,
   suggestedWeightKg,
   swapRank,
-  uid,
   volumeKg,
 } from "@/lib/logic";
-import { catalogGifUrl } from "@/lib/media";
-import { demoUrlFor, youtubeEmbed } from "@/lib/minmax";
-import { formatLoad, formatWeight, toKg } from "@/lib/units";
+import { formatLoad } from "@/lib/units";
 import {
   MUSCLE_LABEL,
   MUSCLES,
@@ -40,6 +34,24 @@ import {
 } from "@/lib/types";
 
 export function WorkoutScreen() {
+  const params = useSearchParams();
+  const planId = params.get("plan");
+  const sessionId = params.get("session");
+  if (planId && !sessionId) return <PlanScreen planId={planId} />;
+  return <SessionScreen />;
+}
+
+function exerciseDone(exercise: SessionExercise) {
+  return exercise.sets.length > 0 && exercise.sets.every((set) => set.done);
+}
+
+function formatClock(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+function SessionScreen() {
   const gym = useGym();
   const router = useRouter();
   const sessionId = useSearchParams().get("session");
@@ -50,9 +62,14 @@ export function WorkoutScreen() {
   const [now, setNow] = useState(Date.now());
   const [restUntil, setRestUntil] = useState<number | null>(null);
   const [swapId, setSwapId] = useState<string | null>(null);
+  const [subsId, setSubsId] = useState<string | null>(null);
+  const [index, setIndex] = useState(0);
   const [otherEquipment, setOtherEquipment] = useState(true);
   const [query, setQuery] = useState("");
   const [adding, setAdding] = useState(false);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const indexRef = useRef(0);
+  const swipeRef = useRef<{ id: number; x: number; y: number; axis: "x" | "y" | null } | null>(null);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
@@ -91,7 +108,7 @@ export function WorkoutScreen() {
           <Empty>
             <EmptyHeader>
               <EmptyTitle>No workout in progress</EmptyTitle>
-              <EmptyDescription>Start a day from Home or Train.</EmptyDescription>
+              <EmptyDescription>Start a day from Home or Workouts.</EmptyDescription>
             </EmptyHeader>
           </Empty>
         </div>
@@ -99,7 +116,8 @@ export function WorkoutScreen() {
     );
   }
 
-  const seconds = Math.max(0, Math.floor((now - active.startedAt) / 1000));
+  const session = active;
+  const seconds = Math.max(0, Math.floor((now - session.startedAt) / 1000));
   const clock = `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
   const restLeft = restUntil
     ? Math.max(0, Math.ceil((restUntil - now) / 1000))
@@ -114,368 +132,212 @@ export function WorkoutScreen() {
     patch: (exercise: SessionExercise) => SessionExercise,
   ) {
     return {
-      ...active!,
-      exercises: active!.exercises.map((exercise) =>
+      ...session,
+      exercises: session.exercises.map((exercise) =>
         exercise.id === exerciseId ? patch(exercise) : exercise,
       ),
     };
   }
 
+  const priorSessions = gym.sessions.filter((item) => item.id !== session.id);
+  const segments = session.exercises.map((exercise) => ({
+    id: exercise.id,
+    done: exerciseDone(exercise),
+  }));
+  const safeIndex = Math.min(index, Math.max(0, session.exercises.length - 1));
+  indexRef.current = safeIndex;
+  const current = session.exercises[safeIndex];
+  const currentDone = current ? exerciseDone(current) : true;
+  const isLast = safeIndex >= session.exercises.length - 1;
+  const subsExercise = subsId
+    ? session.exercises.find((item) => item.id === subsId) ?? null
+    : null;
+  const subsChoices = subsExercise
+    ? substitutionChoices(subsExercise, gym.exercises, gym.map)
+    : [];
+  const subsName = subsExercise
+    ? gym.map.get(subsExercise.exerciseId)?.name ?? "Exercise"
+    : "";
+
+  function goTo(next: number) {
+    const el = scrollerRef.current;
+    const last = Math.max(0, session.exercises.length - 1);
+    const clamped = Math.max(0, Math.min(last, next));
+    indexRef.current = clamped;
+    setIndex(clamped);
+    if (!el?.clientWidth) return;
+    el.scrollTo({ left: clamped * el.clientWidth, behavior: "smooth" });
+  }
+
+  function onSwipeStart(event: ReactPointerEvent<HTMLDivElement>) {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (target.closest("input, textarea, button, a, iframe, select")) return;
+    swipeRef.current = { id: event.pointerId, x: event.clientX, y: event.clientY, axis: null };
+  }
+
+  function onSwipeMove(event: ReactPointerEvent<HTMLDivElement>) {
+    const swipe = swipeRef.current;
+    if (!swipe || swipe.id !== event.pointerId) return;
+    const dx = event.clientX - swipe.x;
+    const dy = event.clientY - swipe.y;
+    if (swipe.axis) return;
+    if (Math.hypot(dx, dy) < 12) return;
+    swipe.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+    if (swipe.axis === "x") event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function onSwipeEnd(event: ReactPointerEvent<HTMLDivElement>) {
+    const swipe = swipeRef.current;
+    if (!swipe || swipe.id !== event.pointerId) return;
+    swipeRef.current = null;
+    if (swipe.axis !== "x") return;
+    const dx = event.clientX - swipe.x;
+    if (dx <= -48) goTo(indexRef.current + 1);
+    else if (dx >= 48) goTo(indexRef.current - 1);
+  }
+
+  function onPagerScroll(event: UIEvent<HTMLDivElement>) {
+    const el = event.currentTarget;
+    if (!el.clientWidth || !session.exercises.length) return;
+    const last = session.exercises.length - 1;
+    const next = Math.max(0, Math.min(last, Math.round(el.scrollLeft / el.clientWidth)));
+    setIndex((value) => (value === next ? value : next));
+  }
+
+  function openAlternatives(exercise: SessionExercise) {
+    const choices = substitutionChoices(exercise, gym.exercises, gym.map);
+    if (choices.length) {
+      setSubsId(exercise.id);
+      return;
+    }
+    setSwapId(exercise.id);
+    setOtherEquipment(true);
+    setQuery("");
+  }
+
+  function logOrNext() {
+    if (!current) return;
+    const open = current.sets.find((set) => !set.done);
+    if (open) {
+      void update(
+        patchExercise(current.id, (item) => ({
+          ...item,
+          sets: item.sets.map((row) => (row.id === open.id ? { ...row, done: true } : row)),
+        })),
+      );
+      setRestUntil(Date.now() + restMs(current.rest));
+      return;
+    }
+    if (!isLast) goTo(safeIndex + 1);
+  }
+
   return (
-    <main className="min-h-dvh bg-background">
+    <main className="-mb-[env(safe-area-inset-bottom)] flex h-dvh flex-col overflow-hidden bg-background">
       <StackHeader
-        title={active.name}
+        title={session.name}
         fallback="/"
-        detail={`${clock} · ${formatLoad(volumeKg(active), gym.settings.unit)} · ${doneSetCount(active)} sets`}
+        detail={`${clock} · ${formatLoad(volumeKg(session), gym.settings.unit)} · ${doneSetCount(session)} sets`}
       >
         <Button
           type="button"
           className="mr-2 shrink-0"
           onClick={async () => {
-            await gym.finishSession(active.id);
+            await gym.finishSession(session.id);
             router.push("/");
           }}
         >
           Finish
         </Button>
       </StackHeader>
-      <div className="flex flex-col gap-6 px-4 py-4 pb-28">
-        {active.exercises.map((exercise) => {
-          const lib = gym.map.get(exercise.exerciseId);
-          const name = lib?.name ?? "Exercise";
-          const priorSessions = gym.sessions.filter(
-            (session) => session.id !== active.id,
-          );
-          const previous = lastLoggedExercise(
-            exercise.exerciseId,
-            priorSessions,
-          );
-          const previousSets =
-            previous?.sets.filter(
-              (set) => set.done && set.weight != null && set.reps != null,
-            ) ?? [];
-          const suggestion = suggestedWeightKg(exercise, lib, priorSessions);
-          const rirFor = (index: number) =>
-            index === 0 ? exercise.rirSet1 : exercise.rirSet2;
-          const priorRir = (index: number) =>
-            index === 0 ? previous?.rirSet1 : previous?.rirSet2;
-          const embed = youtubeEmbed(
-            demoUrlFor(name, gym.program?.builtin) ?? exercise.videoUrl,
-          );
-          const gif = embed ? null : catalogGifUrl(lib?.id);
-          const minmax = Boolean(exercise.substitution1 || exercise.substitution2);
-          const mainLib = exercise.swappedFromExerciseId
-            ? gym.map.get(exercise.swappedFromExerciseId)
-            : lib;
-          const substitutions = [
-            exercise.substitution1,
-            exercise.substitution2,
-          ].flatMap((option, index) => {
-            if (!option || option === "See Notes") return [];
-            const match = gym.exercises.find(
-              (item) => item.name.toLowerCase() === option.toLowerCase(),
-            );
-            if (!match || match.id === exercise.exerciseId) return [];
-            return [{ key: `sub-${index + 1}`, slot: index + 1, option, lib: match, main: false }];
-          });
-          if (mainLib && mainLib.id !== exercise.exerciseId) {
-            substitutions.unshift({
-              key: "main",
-              slot: 0,
-              option: mainLib.name,
-              lib: mainLib,
-              main: true,
-            });
-          }
-          const isMain = Boolean(mainLib && mainLib.id === exercise.exerciseId);
-          return (
-            <Card key={exercise.id}>
-              <CardHeader>
-                {active.weekIndex ? (
-                  <p className="text-xs text-muted-foreground">Week {active.weekIndex}</p>
-                ) : null}
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <CardTitle>{name}</CardTitle>
-                    {minmax && isMain ? <Badge variant="secondary">Main</Badge> : null}
-                  </div>
-                  {minmax ? null : (
-                    <Button
-                      type="button"
-                      variant="link"
-                      onClick={() => {
-                        setSwapId(exercise.id);
-                        setOtherEquipment(true);
-                        setQuery("");
-                      }}
-                    >
-                      Swap
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-3">
-              {embed ? (
-                <div className="mb-3 aspect-video overflow-hidden rounded-xl bg-black">
-                  <iframe
-                    className="h-full w-full"
-                    src={embed}
-                    title={`${name} demo`}
-                    loading="lazy"
-                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
-              ) : gif ? (
-                <div className="mb-3 flex aspect-video items-center justify-center overflow-hidden rounded-xl bg-white">
-                  <Image
-                    src={gif}
-                    alt={`${name} demo`}
-                    width={180}
-                    height={180}
-                    unoptimized
-                    className="size-44 object-contain"
-                  />
-                </div>
-              ) : null}
-              <dl className="flex flex-col gap-1 text-sm text-muted-foreground">
-                <div className="flex justify-between gap-3">
-                  <dt>Last-set intensity</dt>
-                  <dd className="text-right text-foreground">
-                    {exercise.technique || "N/A"}
-                  </dd>
-                </div>
-                {exercise.warmupSets ? (
-                  <div className="flex justify-between gap-3">
-                    <dt>Warm-up sets</dt>
-                    <dd className="text-foreground">{exercise.warmupSets}</dd>
-                  </div>
-                ) : null}
-                <div className="flex justify-between gap-3">
-                  <dt>Working sets</dt>
-                  <dd className="text-foreground">
-                    {exercise.workingSets || exercise.setsTarget}
-                  </dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt>Rep range</dt>
-                  <dd className="text-foreground">
-                    {exercise.repRange ||
-                      `${exercise.repMin}–${exercise.repMax}`}
-                  </dd>
-                </div>
-                {exercise.rpe ? (
-                  <div className="flex justify-between gap-3">
-                    <dt>RPE</dt>
-                    <dd className="text-foreground">{exercise.rpe}</dd>
-                  </div>
-                ) : null}
-                {exercise.rest ? (
-                  <div className="flex justify-between gap-3">
-                    <dt>Rest</dt>
-                    <dd className="text-foreground">{exercise.rest}</dd>
-                  </div>
-                ) : null}
-              </dl>
-              {exercise.notes ? (
-                <p className="mt-3 text-sm text-foreground">{exercise.notes}</p>
-              ) : null}
-              {previousSets.length ? (
-                <p className="mt-3 text-sm text-muted-foreground">
-                  Previous{" "}
-                  {previousSets
-                    .map(
-                      (set, index) =>
-                        `${formatWeight(set.weight, gym.settings.unit)}×${set.reps}${priorRir(index) ? ` RIR ${priorRir(index)}` : ""}${index === 0 && !priorRir(0) && previous?.rpe ? ` RPE ${previous.rpe}` : ""}`,
-                    )
-                    .join(", ")}
-                </p>
-              ) : (
-                <p className="mt-3 text-sm text-muted-foreground">Previous —</p>
-              )}
-              {suggestion != null ? (
-                <p className="text-sm text-muted-foreground">
-                  Next {formatWeight(suggestion.weight, gym.settings.unit)}{" "}
-                  {gym.settings.unit}
-                </p>
-              ) : null}
-              <div className="mt-3 grid min-w-0 grid-cols-[2.75rem_minmax(0,1fr)_minmax(0,4.5rem)_2.75rem] gap-2 text-xs text-muted-foreground">
-                <span>Set</span>
-                <span>{gym.settings.unit}</span>
-                <span>Reps</span>
-                <span />
-              </div>
-              {exercise.sets.map((set, index) => (
-                <div
-                  key={set.id}
-                  className="mt-2 grid min-w-0 grid-cols-[2.75rem_minmax(0,1fr)_minmax(0,4.5rem)_2.75rem] items-center gap-2"
-                >
-                  <span className="text-sm">
-                    {index + 1}
-                    {set.pr ? " PR" : ""}
-                    {rirFor(index) ? (
-                      <span className="block text-xs text-muted-foreground">
-                        RIR {rirFor(index)}
-                      </span>
-                    ) : exercise.rpe ? (
-                      <span className="block text-xs text-muted-foreground">
-                        RPE {exercise.rpe}
-                      </span>
-                    ) : null}
-                  </span>
-                  <Input
-                    inputMode="decimal"
-                    aria-label={`Set ${index + 1} load`}
-                    value={formatWeight(set.weight, gym.settings.unit)}
-                    onChange={(event) => {
-                      const raw = event.target.value;
-                      const weight =
-                        raw === ""
-                          ? null
-                          : toKg(Number(raw), gym.settings.unit);
-                      void update(
-                        patchExercise(exercise.id, (item) => ({
-                          ...item,
-                          sets: item.sets.map((row) =>
-                            row.id === set.id ? { ...row, weight } : row,
-                          ),
-                        })),
-                      );
-                    }}
-                    className="min-w-0 tabular-nums"
-                  />
-                  <Input
-                    inputMode="numeric"
-                    aria-label={`Set ${index + 1} reps`}
-                    value={set.reps ?? ""}
-                    onChange={(event) => {
-                      const reps =
-                        event.target.value === ""
-                          ? null
-                          : Number(event.target.value);
-                      void update(
-                        patchExercise(exercise.id, (item) => ({
-                          ...item,
-                          sets: item.sets.map((row) =>
-                            row.id === set.id ? { ...row, reps } : row,
-                          ),
-                        })),
-                      );
-                    }}
-                    className="min-w-0 tabular-nums"
-                  />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant={set.done ? "default" : "outline"}
-                    aria-label={set.done ? "Completed set" : "Complete set"}
-                    onClick={() => {
-                      const done = !set.done;
-                      void update(
-                        patchExercise(exercise.id, (item) => ({
-                          ...item,
-                          sets: item.sets.map((row) =>
-                            row.id === set.id ? { ...row, done } : row,
-                          ),
-                        })),
-                      );
-                      if (done) setRestUntil(Date.now() + restMs(exercise.rest));
-                    }}
-                  >
-                    <CheckIcon />
-                  </Button>
-                </div>
-              ))}
-              {substitutions.length ? (
-                <div className="flex flex-col gap-2">
-                  <p className="text-sm font-medium">Substitutions</p>
-                  {substitutions.map(({ key, option, lib: swap, main }) => (
-                    <Button
-                      key={key}
-                      type="button"
-                      variant="outline"
-                      size="lg"
-                      className="w-full justify-between px-3"
-                      onClick={() => {
-                        void applySwap(exercise.id, swap, false);
-                      }}
-                    >
-                      <span className="flex min-w-0 items-center gap-2 text-left">
-                        <span className="truncate">{option}</span>
-                        {main ? <Badge variant="secondary">Main</Badge> : null}
-                      </span>
-                      <ArrowLeftRightIcon data-icon="inline-end" />
-                    </Button>
-                  ))}
-                </div>
-              ) : null}
-              <Button
-                type="button"
-                variant="link"
-                className="self-start"
-                onClick={() => {
-                  void update(
-                    patchExercise(exercise.id, (item) => ({
-                      ...item,
-                      sets: [
-                        ...item.sets,
-                        {
-                          id: uid(),
-                          weight: suggestion?.weight ?? null,
-                          reps: null,
-                          done: false,
-                        },
-                      ],
-                    })),
-                  );
-                }}
-              >
-                Add set
-              </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
+      <div
+        ref={scrollerRef}
+        className="grid h-full min-h-0 flex-1 grid-flow-col auto-cols-[100%] grid-rows-1 snap-x snap-mandatory overflow-x-auto overflow-y-hidden scrollbar-none"
+        onScroll={onPagerScroll}
+        onPointerDown={onSwipeStart}
+        onPointerMove={onSwipeMove}
+        onPointerUp={onSwipeEnd}
+        onPointerCancel={onSwipeEnd}
+      >
+        {session.exercises.map((exercise) => (
+          <ExerciseSlide
+            key={exercise.id}
+            exercise={exercise}
+            sessions={priorSessions}
+            catalog={gym.exercises}
+            map={gym.map}
+            unit={gym.settings.unit}
+            builtin={gym.program?.builtin}
+            weekIndex={session.weekIndex}
+            segments={segments}
+            activeIndex={safeIndex}
+            onJump={goTo}
+            onOpenAlternatives={() => openAlternatives(exercise)}
+            onPatch={(patch) => {
+              void update(patchExercise(exercise.id, patch));
+            }}
+            onLoggedSet={() => setRestUntil(Date.now() + restMs(exercise.rest))}
+          />
+        ))}
       </div>
-      {restUntil && restLeft > 0 ? (
-        <div className="fixed inset-x-0 bottom-0 z-20 flex flex-col gap-3 border-t bg-background p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <p className="text-center text-4xl font-semibold tabular-nums">
-            {Math.floor(restLeft / 60)}:{String(restLeft % 60).padStart(2, "0")}
-          </p>
-          <div className="flex gap-2">
-            <Button
+      <div className="shrink-0 bg-background px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        {restLeft > 0 ? (
+          <div className="mb-2 flex items-center justify-between rounded-2xl bg-[#3dce73] px-4 py-4 text-[#06381a]">
+            <button
               type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() =>
-                setRestUntil((value) => (value ?? Date.now()) - 15_000)
-              }
+              className="text-sm font-medium"
+              onClick={() => setRestUntil((value) => (value ?? Date.now()) - 15_000)}
             >
               −15s
-            </Button>
-            <Button
+            </button>
+            <p className="flex items-baseline gap-2 text-white">
+              <span className="text-5xl font-semibold tabular-nums leading-none">
+                {formatClock(restLeft)}
+              </span>
+              <span className="text-sm font-medium">Rest</span>
+            </p>
+            <button
               type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={() =>
-                setRestUntil((value) => (value ?? Date.now()) + 15_000)
-              }
+              className="text-sm font-medium"
+              onClick={() => setRestUntil((value) => (value ?? Date.now()) + 15_000)}
             >
               +15s
-            </Button>
-            <Button
-              type="button"
-              className="flex-1"
-              onClick={() => setRestUntil(null)}
-            >
-              Skip
-            </Button>
+            </button>
           </div>
-        </div>
+        ) : null}
+        {restLeft > 0 ? (
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-12 w-full text-base font-semibold"
+            onClick={() => setRestUntil(null)}
+          >
+            Skip Rest
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            className="h-12 w-full text-base"
+            disabled={!current || (currentDone && isLast)}
+            onClick={logOrNext}
+          >
+            {currentDone && !isLast ? "Next" : "Log Set"}
+          </Button>
+        )}
+      </div>
+      {subsExercise && subsChoices.length ? (
+        <SubstitutionSheet
+          name={subsName}
+          choices={subsChoices}
+          onClose={() => setSubsId(null)}
+          onPick={(lib) => {
+            void applySwap(subsExercise.id, lib, false);
+          }}
+        />
       ) : null}
       {swapId ? (
         <SwapSheet
-          exercise={active.exercises.find((item) => item.id === swapId)!}
+          exercise={session.exercises.find((item) => item.id === swapId)!}
           catalog={gym.exercises}
           otherEquipment={otherEquipment}
           query={query}
@@ -497,13 +359,13 @@ export function WorkoutScreen() {
   );
 
   async function applySwap(sessionExerciseId: string, lib: LibraryExercise, permanent: boolean) {
-    const exercise = active!.exercises.find((item) => item.id === sessionExerciseId);
+    const exercise = session.exercises.find((item) => item.id === sessionExerciseId);
     if (!exercise) return;
     const fromId = exercise.exerciseId;
     const suggestion = suggestedWeightKg(
       { ...exercise, exerciseId: lib.id },
       lib,
-      gym.sessions.filter((session) => session.id !== active!.id),
+      gym.sessions.filter((item) => item.id !== session.id),
     );
     const originId = exercise.swappedFromExerciseId ?? fromId;
     const next = patchExercise(exercise.id, (item) => ({
@@ -520,10 +382,11 @@ export function WorkoutScreen() {
     }));
     await update(next);
     if (permanent && gym.week) {
-      const slot = gym.week.slots.find((item) => item.id === active!.slotId);
+      const slot = gym.week.slots.find((item) => item.id === session.slotId);
       if (slot) await gym.replaceInProgram(slot.sourceDayId, fromId, lib.id);
     }
     setSwapId(null);
+    setSubsId(null);
   }
 }
 

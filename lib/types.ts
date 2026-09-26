@@ -133,6 +133,7 @@ export interface Settings {
   id: "settings";
   unit: "kg" | "lb";
   activeProgramId?: string;
+  ongoingProgramId?: string;
 }
 
 export const MUSCLES: Muscle[] = [

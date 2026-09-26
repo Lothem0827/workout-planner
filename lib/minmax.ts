@@ -84,34 +84,41 @@ function repsOf(range: string) {
 
 export function classifyExercise(name: string): Pick<LibraryExercise, "primary" | "pattern" | "equipment"> {
   const text = name.toLowerCase();
-  const equipment = text.includes("cable")
+  const equipment = text.includes("cable") || text.includes("pressdown") || text.includes("pushdown")
     ? "cable"
     : text.includes("db") || text.includes("dumbbell")
       ? "dumbbell"
       : text.includes("smith")
         ? "smith"
-        : text.includes("machine") || text.includes("pec deck") || text.includes("leg press") || text.includes("leg curl") || text.includes("leg extension")
+        : text.includes("machine") ||
+            text.includes("pec deck") ||
+            text.includes("leg press") ||
+            text.includes("leg curl") ||
+            text.includes("hamstring curl") ||
+            text.includes("leg extension")
           ? "machine"
           : text.includes("ez")
             ? "ez bar"
             : "barbell";
 
   const rules: { test: RegExp; primary: Muscle; pattern: Pattern }[] = [
-    { test: /calf/, primary: "calves", pattern: "calfRaise" },
-    { test: /dragon flag|leg raise|crunch|plank|ab /, primary: "abs", pattern: "core" },
-    { test: /curl|preacher/, primary: "biceps", pattern: "curl" },
-    { test: /pressdown|pushdown|skull|overhead extension|dip/, primary: "triceps", pattern: "extension" },
+    { test: /\bcalf/, primary: "calves", pattern: "calfRaise" },
+    { test: /dragon flag|leg raise|crunch|plank|dead bug|\bab\b/, primary: "abs", pattern: "core" },
+    { test: /hamstring curl|leg curl|nordic|good morning/, primary: "hamstrings", pattern: "hinge" },
+    { test: /\bwrist\b/, primary: "biceps", pattern: "curl" },
+    { test: /\bcurls?\b|preacher/, primary: "biceps", pattern: "curl" },
+    { test: /triceps|pressdown|pushdown|skull|kickback|\bdips?\b/, primary: "triceps", pattern: "extension" },
     { test: /shrug/, primary: "traps", pattern: "raise" },
-    { test: /y-raise|lateral|rear delt|face pull/, primary: "shoulders", pattern: "raise" },
-    { test: /flye|fly|pec deck/, primary: "chest", pattern: "fly" },
-    { test: /pulldown|pull-up|pullup|chin/, primary: "lats", pattern: "verticalPull" },
-    { test: /row/, primary: "lats", pattern: "horizontalPull" },
-    { test: /hip thrust|abduction|adduction|glute/, primary: "glutes", pattern: "hinge" },
-    { test: /squat|leg press|leg extension|lunge|hack/, primary: "quads", pattern: "squat" },
-    { test: /leg curl|nordic|good morning/, primary: "hamstrings", pattern: "hinge" },
-    { test: /rdl|deadlift|hip thrust|glute|bridge/, primary: "glutes", pattern: "hinge" },
+    { test: /reverse pec|reverse fly|y-raise|\blateral\b|rear delt|face pull/, primary: "shoulders", pattern: "raise" },
+    { test: /flye|\bfly\b|pec deck/, primary: "chest", pattern: "fly" },
+    { test: /pulldown|pull-up|pullup|chin-?up|\bchin\b/, primary: "lats", pattern: "verticalPull" },
+    { test: /\brows?\b/, primary: "lats", pattern: "horizontalPull" },
+    { test: /hip thrust|abduction|adduction|\bglute/, primary: "glutes", pattern: "hinge" },
+    { test: /squat|leg press|leg extension|\blunges?\b|\bhack\b/, primary: "quads", pattern: "squat" },
+    { test: /\brdl\b|deadlift|bridge/, primary: "glutes", pattern: "hinge" },
+    { test: /dead hang/, primary: "lats", pattern: "other" },
     { test: /overhead press|shoulder press/, primary: "shoulders", pattern: "verticalPress" },
-    { test: /press|bench/, primary: "chest", pattern: "horizontalPress" },
+    { test: /\bpress\b|\bbench\b/, primary: "chest", pattern: "horizontalPress" },
   ];
   const hit = rules.find((rule) => rule.test.test(text));
   return {

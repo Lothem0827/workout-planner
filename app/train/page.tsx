@@ -6,53 +6,43 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertDialog,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useGym } from "@/lib/gym";
-import { activeSessionForSlot, activeSessionForWeek } from "@/lib/logic";
-import type { Session } from "@/lib/types";
 
 export default function TrainPage() {
   const gym = useGym();
   const router = useRouter();
-  const [choice, setChoice] = useState<Session | null>(null);
-  const inProgress = activeSessionForWeek(gym.week, gym.sessions);
+  const [switchTo, setSwitchTo] = useState<string | null>(null);
+  const [dialogNames, setDialogNames] = useState({ current: "This workout", next: "this workout" });
+  const ongoing = gym.programs.find((plan) => plan.id === gym.settings.ongoingProgramId) ?? null;
 
-  function openSession(id: string) {
-    router.push(`/workout?session=${id}`);
+  async function open(id: string) {
+    await gym.beginProgram(id);
+    router.push(`/workout?plan=${id}`);
   }
 
-  async function begin(slotId: string) {
-    const id = await gym.startSlot(slotId);
-    if (id) openSession(id);
-  }
-
-  async function restart(session: Session) {
-    const slotId = session.slotId;
-    if (!slotId) return;
-    await gym.deleteSession(session.id);
-    const id = await gym.startSlot(slotId);
-    if (id) openSession(id);
-  }
-
-  function start(slotId: string) {
-    const existing = activeSessionForSlot(slotId, gym.sessions);
-    if (existing) {
-      setChoice(existing);
+  function press(id: string) {
+    if (id === ongoing?.id) {
+      void open(id);
       return;
     }
-    void begin(slotId);
+    if (ongoing) {
+      const next = gym.programs.find((plan) => plan.id === id);
+      setDialogNames({ current: ongoing.name, next: next?.name ?? "this workout" });
+      setSwitchTo(id);
+      return;
+    }
+    void open(id);
   }
 
   if (!gym.ready) {
@@ -60,7 +50,7 @@ export default function TrainPage() {
       <main className="flex flex-col gap-4 px-4 py-5">
         <Skeleton className="h-8 w-32" />
         <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-24 w-full" />
       </main>
     );
   }
@@ -68,93 +58,30 @@ export default function TrainPage() {
   return (
     <main className="flex flex-col gap-4 px-4 py-5">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Train</h1>
-        <div className="flex items-center gap-2">
-          <ToggleGroup
-            value={[gym.settings.unit]}
-            onValueChange={(value) => {
-              const next = value[0];
-              if (next === "kg" || next === "lb") void gym.setUnit(next);
-            }}
-          >
-            <ToggleGroupItem value="kg">kg</ToggleGroupItem>
-            <ToggleGroupItem value="lb">lb</ToggleGroupItem>
-          </ToggleGroup>
-          <Button className="shrink-0" variant="ghost" render={<Link href="/train/edit?new=1" />} nativeButton={false}>
-            Add a plan
-            <PlusIcon data-icon="inline-end" />
-          </Button>
-        </div>
+        <h1 className="text-2xl font-semibold">Workouts</h1>
+        <Button className="shrink-0" variant="ghost" render={<Link href="/train/edit?new=1" />} nativeButton={false}>
+          Add a plan
+          <PlusIcon data-icon="inline-end" />
+        </Button>
       </div>
       {gym.programs.length ? (
-        <div className="min-w-0 overflow-x-auto">
-          <ToggleGroup
-            className="w-max"
-            value={gym.program ? [gym.program.id] : []}
-            onValueChange={(value) => {
-              const next = value[0];
-              if (next) void gym.selectProgram(next);
-            }}
-          >
-            {gym.programs.map((plan) => (
-              <ToggleGroupItem key={plan.id} value={plan.id}>
-                {plan.name}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-        </div>
-      ) : null}
-      {gym.program ? (
-        <section className="flex flex-col gap-3">
-          {inProgress ? (
-            <Card>
-              <CardHeader>
-                <CardDescription>Workout in progress</CardDescription>
-                <CardTitle>{inProgress.name}</CardTitle>
-              </CardHeader>
-              <CardFooter className="flex-col items-stretch gap-2">
-                <Button className="w-full" onClick={() => openSession(inProgress.id)}>
-                  Resume
-                </Button>
-                <Button className="w-full" variant="outline" onClick={() => void restart(inProgress)}>
-                  Start again
-                </Button>
-              </CardFooter>
-            </Card>
-          ) : null}
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h2 className="text-lg font-semibold">{gym.program.name}</h2>
-              {gym.program.weeks?.length ? (
-                <p className="text-sm text-muted-foreground">Week {gym.program.weekIndex ?? 1} of {gym.program.weeks.length}</p>
-              ) : null}
-            </div>
-            <Button variant="link" render={<Link href="/train/edit" />} nativeButton={false}>Edit</Button>
-          </div>
-          {(gym.week?.slots ?? []).filter((slot) => slot.status !== "dropped").map((slot) => (
-            <Card key={slot.id}>
-              <CardHeader>
-                <CardTitle>{slot.name}</CardTitle>
-                <CardAction>
-                  <Badge variant={slot.status === "done" ? "success" : "secondary"}>{slot.status}</Badge>
-                </CardAction>
+        gym.programs.map((plan) => (
+          <Card key={plan.id}>
+            <CardHeader>
+              <CardTitle>{plan.name}</CardTitle>
+              {plan.weeks?.length ? (
                 <CardDescription>
-                  {slot.exercises
-                    .map((exercise) => gym.map.get(exercise.exerciseId)?.name ?? "Exercise")
-                    .join(", ")}
+                  Week {plan.weekIndex ?? 1} of {plan.weeks.length}
                 </CardDescription>
-              </CardHeader>
-              {slot.status === "pending" ? (
-                <CardFooter>
-                  <Button className="w-full" onClick={() => start(slot.id)}>Start</Button>
-                </CardFooter>
               ) : null}
-            </Card>
-          ))}
-          <Button variant="link" render={<Link href="/train/shorten" />} nativeButton={false}>
-            Fit into the days I have left
-          </Button>
-        </section>
+              <CardAction>
+                <Button type="button" onClick={() => press(plan.id)}>
+                  {plan.id === ongoing?.id ? "Resume" : "Start"}
+                </Button>
+              </CardAction>
+            </CardHeader>
+          </Card>
+        ))
       ) : (
         <Empty>
           <EmptyHeader>
@@ -166,47 +93,29 @@ export default function TrainPage() {
           </EmptyContent>
         </Empty>
       )}
-      <AlertDialog open={choice != null} onOpenChange={(open) => { if (!open) setChoice(null); }}>
+      <AlertDialog open={switchTo != null} onOpenChange={(open) => { if (!open) setSwitchTo(null); }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Workout in progress</AlertDialogTitle>
+            <AlertDialogTitle>Ongoing workout</AlertDialogTitle>
             <AlertDialogDescription>
-              {choice?.name} is already started. Resume it, or start again.
+              {dialogNames.current} is already started. Start {dialogNames.next} instead? You can always come back to {dialogNames.current}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                const session = choice;
-                setChoice(null);
-                if (session) void restart(session);
-              }}
-            >
-              Start again
-            </Button>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <Button
               type="button"
               onClick={() => {
-                const session = choice;
-                setChoice(null);
-                if (session) openSession(session.id);
+                const id = switchTo;
+                setSwitchTo(null);
+                if (id) void open(id);
               }}
             >
-              Resume
+              Start
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <Separator />
-      <p className="text-xs text-muted-foreground">
-        Exercise names from the exercises-dataset by Hasan Emir Yıldırım, MIT. Exercise demos © Gym visual —{" "}
-        <a href="https://gymvisual.com/" className="underline" target="_blank" rel="noreferrer">
-          gymvisual.com
-        </a>
-        .
-      </p>
     </main>
   );
 }

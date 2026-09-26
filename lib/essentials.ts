@@ -78,9 +78,23 @@ export function essentialsNames() {
 export function ensureEssentialsExercises(existing: LibraryExercise[]) {
   const byName = new Map(existing.map((exercise) => [exercise.name.toLowerCase(), exercise]));
   const created: LibraryExercise[] = [];
+  const updated: LibraryExercise[] = [];
   for (const name of essentialsNames()) {
-    if (byName.has(name.toLowerCase())) continue;
     const classified = classifyExercise(name);
+    const current = byName.get(name.toLowerCase());
+    if (current) {
+      if (
+        current.id.startsWith("essentials-") &&
+        (current.primary !== classified.primary ||
+          current.pattern !== classified.pattern ||
+          current.equipment !== classified.equipment)
+      ) {
+        const next = { ...current, ...classified };
+        updated.push(next);
+        byName.set(name.toLowerCase(), next);
+      }
+      continue;
+    }
     const exercise: LibraryExercise = {
       id: `essentials-${uid()}`,
       name,
@@ -93,7 +107,7 @@ export function ensureEssentialsExercises(existing: LibraryExercise[]) {
     created.push(exercise);
     byName.set(name.toLowerCase(), exercise);
   }
-  return { created, byName };
+  return { created, updated, byName };
 }
 
 export function essentialsProgram(byName: Map<string, LibraryExercise>): Program {

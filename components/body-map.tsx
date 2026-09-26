@@ -56,29 +56,32 @@ function parseFigure(markup: string): Figure {
   };
 }
 
-function useFigure(side: "front" | "back") {
-  const [figure, setFigure] = useState<Figure | null>(cache.get(side) ?? null);
+export function useMuscleFigure(file: string) {
+  const [figure, setFigure] = useState<Figure | null>(cache.get(file) ?? null);
   useEffect(() => {
-    const cached = cache.get(side);
+    const cached = cache.get(file);
     if (cached) {
       setFigure(cached);
       return;
     }
     setFigure(null);
     let cancel = false;
-    const file = side === "front" ? "Front" : "Back";
     fetch(`/svg/muscles/${file}.svg`)
       .then((response) => response.text())
       .then((markup) => {
         const next = parseFigure(markup);
-        cache.set(side, next);
+        cache.set(file, next);
         if (!cancel) setFigure(next);
       });
     return () => {
       cancel = true;
     };
-  }, [side]);
+  }, [file]);
   return figure;
+}
+
+function useFigure(side: "front" | "back") {
+  return useMuscleFigure(side === "front" ? "Front" : "Back");
 }
 
 function MusclePaths({
