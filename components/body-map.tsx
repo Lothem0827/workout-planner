@@ -66,7 +66,8 @@ function useFigure(side: "front" | "back") {
     }
     setFigure(null);
     let cancel = false;
-    fetch(`/svg/muscles/${side}.svg`)
+    const file = side === "front" ? "Front" : "Back";
+    fetch(`/svg/muscles/${file}.svg`)
       .then((response) => response.text())
       .then((markup) => {
         const next = parseFigure(markup);

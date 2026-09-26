@@ -1,3 +1,4 @@
+import essentialsRaw from "@/data/essentials.json";
 import raw from "@/data/minmax.json";
 import { uid } from "./logic";
 import type { LibraryExercise, Muscle, Pattern, PlannedExercise, Program, ProgramDay } from "./types";
@@ -33,8 +34,27 @@ const demos = new Map(
   Object.entries(data.demos ?? {}).map(([name, url]) => [name.toLowerCase(), url]),
 );
 
-export function demoUrlFor(name: string) {
-  return demos.get(name.toLowerCase()) ?? null;
+const essentialsDemos = new Map(
+  Object.entries((essentialsRaw as { demos?: Record<string, string> }).demos ?? {}).map(([name, url]) => [
+    name.toLowerCase(),
+    url,
+  ]),
+);
+
+export function demoUrlFor(name: string, builtin?: Program["builtin"]) {
+  const key = name.toLowerCase();
+  const fromMinmax = demos.get(key) ?? null;
+  const fromUpper = essentialsDemos.get(key) ?? null;
+  if (builtin === "upper-lower") return fromUpper ?? fromMinmax;
+  if (builtin === "minmax") return fromMinmax ?? fromUpper;
+  return fromMinmax ?? fromUpper;
+}
+
+function startSeconds(value: string | null) {
+  if (!value) return null;
+  if (/^\d+$/.test(value)) return value;
+  if (/^\d+s$/.test(value)) return value.slice(0, -1);
+  return null;
 }
 
 export function youtubeEmbed(url: string | null | undefined) {
@@ -44,7 +64,9 @@ export function youtubeEmbed(url: string | null | undefined) {
     const id =
       parsed.hostname === "youtu.be" ? parsed.pathname.slice(1) : parsed.searchParams.get("v");
     if (!id) return null;
-    return `https://www.youtube.com/embed/${id}`;
+    const start = startSeconds(parsed.searchParams.get("t") ?? parsed.searchParams.get("start"));
+    const embed = `https://www.youtube.com/embed/${id}`;
+    return start ? `${embed}?start=${start}` : embed;
   } catch {
     return null;
   }

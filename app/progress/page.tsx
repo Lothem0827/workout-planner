@@ -1,9 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { SettingsIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { MonthCalendar } from "@/components/month-calendar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGym } from "@/lib/gym";
@@ -13,6 +26,9 @@ import { formatLoad, formatWeight } from "@/lib/units";
 export default function ProgressPage() {
   const gym = useGym();
   const [cursor, setCursor] = useState(() => new Date());
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [confirm, setConfirm] = useState<"plan" | "data" | null>(null);
+  const [pending, setPending] = useState(false);
   const trained = useMemo(
     () => new Set(gym.sessions.filter((session) => session.status === "finished").map((session) => session.date)),
     [gym.sessions],
@@ -39,6 +55,23 @@ export default function ProgressPage() {
     return [{ id, record, lib, next }];
   });
 
+  function ask(next: "plan" | "data") {
+    setSettingsOpen(false);
+    setConfirm(next);
+  }
+
+  async function confirmAction() {
+    if (!confirm || pending) return;
+    setPending(true);
+    try {
+      if (confirm === "plan" && gym.program) await gym.deleteProgram(gym.program.id);
+      if (confirm === "data") await gym.clearAllData();
+    } finally {
+      setPending(false);
+      setConfirm(null);
+    }
+  }
+
   if (!gym.ready) {
     return (
       <main className="flex flex-col gap-4 px-4 py-5">
@@ -51,7 +84,18 @@ export default function ProgressPage() {
 
   return (
     <main className="flex flex-col gap-4 px-4 py-5">
-      <h1 className="text-2xl font-semibold">Progress</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold">Progress</h1>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Settings"
+          onClick={() => setSettingsOpen(true)}
+        >
+          <SettingsIcon />
+        </Button>
+      </div>
       <MonthCalendar trained={trained} cursor={cursor} onCursor={setCursor} />
       <Card>
         <CardHeader>
@@ -85,6 +129,43 @@ export default function ProgressPage() {
           )}
         </CardContent>
       </Card>
+      <Drawer open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Settings</DrawerTitle>
+          </DrawerHeader>
+          <div className="flex flex-col gap-2 p-4">
+            {gym.program ? (
+              <Button type="button" variant="destructive" className="w-full" onClick={() => ask("plan")}>
+                Delete workout plan
+              </Button>
+            ) : null}
+            <Button type="button" variant="destructive" className="w-full" onClick={() => ask("data")}>
+              Clear all data
+            </Button>
+          </div>
+        </DrawerContent>
+      </Drawer>
+      <AlertDialog open={confirm != null} onOpenChange={(open) => { if (!open && !pending) setConfirm(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirm === "plan" ? `Delete ${gym.program?.name ?? "workout plan"}` : "Clear all data"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirm === "plan"
+                ? "This removes the plan and its current week. Finished workouts stay in your log."
+                : "Workouts, programs, and custom exercises will be removed. This cannot be undone."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" disabled={pending} onClick={() => void confirmAction()}>
+              {confirm === "plan" ? "Delete" : "Clear"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }

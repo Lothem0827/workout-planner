@@ -49,6 +49,7 @@ async function seedPrograms() {
   const count = await db.exercises.count();
   if (count === 0) {
     await db.exercises.bulkPut(catalog as LibraryExercise[]);
+    await createBuiltinPrograms();
   }
   let settings = await db.settings.get("settings");
   if (!settings) {
@@ -62,49 +63,49 @@ async function seedPrograms() {
       await db.programs.put({ ...program, builtin: "minmax" });
       program.builtin = "minmax";
     }
+    if (program.name === "Upper/Lower" && program.builtin !== "upper-lower") {
+      await db.programs.put({ ...program, builtin: "upper-lower" });
+      program.builtin = "upper-lower";
+    }
   }
 
-  let minmax = await keepOneMinmax(settings.activeProgramId);
-  if (!minmax) {
-    const exercises = await db.exercises.toArray();
-    const { created, updated, byName } = ensureMinmaxExercises(exercises);
-    const rows = [...created, ...updated];
-    if (rows.length) await db.exercises.bulkPut(rows);
-    minmax = minmaxProgram(byName);
-    await db.programs.put(minmax);
-    await db.weeks.put(newWeek(minmax, 1));
-    minmax = await keepOneMinmax(settings.activeProgramId);
-  }
-
-  const programsAfterMinmax = await db.programs.toArray();
-  const hasUpper = programsAfterMinmax.some(
-    (program) => program.builtin === "upper-lower" || program.name === "Upper/Lower",
-  );
-  if (!hasUpper) {
-    const exercises = await db.exercises.toArray();
-    const { created, byName } = ensureEssentialsExercises(exercises);
-    if (created.length) await db.exercises.bulkPut(created);
-    const upper = essentialsProgram(byName);
-    await db.programs.put(upper);
-    await db.weeks.put(newWeek(upper, 1));
-  }
-
+  const minmax = await keepOneMinmax(settings.activeProgramId);
   const stored = await db.programs.toArray();
   let activeId = settings.activeProgramId;
-  if (!activeId) {
-    activeId = stored.find((item) => item.id !== minmax?.id)?.id ?? minmax?.id;
-  } else if (!stored.some((item) => item.id === activeId)) {
-    activeId = minmax?.id ?? stored[0]?.id;
+  if (!activeId || !stored.some((item) => item.id === activeId)) {
+    activeId = stored.find((item) => item.id !== minmax?.id)?.id ?? minmax?.id ?? stored[0]?.id;
   }
-  if (activeId && settings.activeProgramId !== activeId) {
-    settings = { ...settings, activeProgramId: activeId };
+  if (settings.activeProgramId !== activeId) {
+    settings = {
+      id: "settings",
+      unit: settings.unit,
+      ...(activeId ? { activeProgramId: activeId } : {}),
+    };
     await db.settings.put(settings);
   }
 
-  const active = (activeId && (await db.programs.get(activeId))) || minmax;
+  if (!activeId) return;
+  const active = await db.programs.get(activeId);
   if (!active) return;
   const weekCount = await db.weeks.where("programId").equals(active.id).count();
   if (weekCount === 0) await db.weeks.put(newWeek(active, 1));
+}
+
+async function createBuiltinPrograms() {
+  const exercises = await db.exercises.toArray();
+  const minmaxEnsured = ensureMinmaxExercises(exercises);
+  const minmaxRows = [...minmaxEnsured.created, ...minmaxEnsured.updated];
+  if (minmaxRows.length) await db.exercises.bulkPut(minmaxRows);
+  const minmax = minmaxProgram(minmaxEnsured.byName);
+  await db.programs.put(minmax);
+  await db.weeks.put(newWeek(minmax, 1));
+
+  const afterMinmax = await db.exercises.toArray();
+  const upperEnsured = ensureEssentialsExercises(afterMinmax);
+  if (upperEnsured.created.length) await db.exercises.bulkPut(upperEnsured.created);
+  const upper = essentialsProgram(upperEnsured.byName);
+  await db.programs.put(upper);
+  await db.weeks.put(newWeek(upper, 1));
 }
 
 async function keepOneMinmax(activeProgramId?: string) {

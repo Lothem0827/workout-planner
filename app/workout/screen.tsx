@@ -159,7 +159,9 @@ export function WorkoutScreen() {
             index === 0 ? exercise.rirSet1 : exercise.rirSet2;
           const priorRir = (index: number) =>
             index === 0 ? previous?.rirSet1 : previous?.rirSet2;
-          const embed = youtubeEmbed(demoUrlFor(name) ?? exercise.videoUrl);
+          const embed = youtubeEmbed(
+            demoUrlFor(name, gym.program?.builtin) ?? exercise.videoUrl,
+          );
           const gif = embed ? null : catalogGifUrl(lib?.id);
           const minmax = Boolean(exercise.substitution1 || exercise.substitution2);
           const mainLib = exercise.swappedFromExerciseId

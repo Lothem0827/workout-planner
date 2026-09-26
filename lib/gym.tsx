@@ -50,6 +50,8 @@ interface GymValue {
   }) => Promise<LibraryExercise>;
   replaceInProgram: (dayId: string, fromId: string, toId: string) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
+  deleteProgram: (id: string) => Promise<void>;
+  clearAllData: () => Promise<void>;
 }
 
 const GymContext = createContext<GymValue | null>(null);
@@ -341,6 +343,56 @@ export function GymProvider({ children }: { children: ReactNode }) {
       const remaining = current.sessions.filter((session) => session.id !== sessionId);
       applyPrs(remaining);
       await db.sessions.bulkPut(remaining);
+      await refresh();
+    },
+    async deleteProgram(id) {
+      await enqueue(async () => {
+        const weeks = await db.weeks.where("programId").equals(id).toArray();
+        const slotIds = new Set(weeks.flatMap((week) => week.slots.map((slot) => slot.id)));
+        if (slotIds.size > 0) {
+          const activeIds = (await db.sessions.toArray())
+            .filter(
+              (session) =>
+                session.status === "active" && session.slotId != null && slotIds.has(session.slotId),
+            )
+            .map((session) => session.id);
+          if (activeIds.length) await db.sessions.bulkDelete(activeIds);
+        }
+        if (weeks.length) await db.weeks.bulkDelete(weeks.map((week) => week.id));
+        await db.programs.delete(id);
+
+        const remaining = await db.programs.toArray();
+        const stored = await db.settings.get("settings");
+        const stillActive = remaining.some((item) => item.id === stored?.activeProgramId);
+        const nextActive = stillActive ? stored?.activeProgramId : remaining[0]?.id;
+        await db.settings.put({
+          id: "settings",
+          unit: stored?.unit ?? "kg",
+          ...(nextActive ? { activeProgramId: nextActive } : {}),
+        });
+        if (nextActive) {
+          const chosen = remaining.find((item) => item.id === nextActive);
+          const weekCount = await db.weeks.where("programId").equals(nextActive).count();
+          if (chosen && weekCount === 0) await db.weeks.put(newWeek(chosen, 1));
+        }
+      });
+      await refresh();
+    },
+    async clearAllData() {
+      await enqueue(async () => {
+        await db.transaction(
+          "rw",
+          [db.sessions, db.weeks, db.programs, db.exercises, db.settings],
+          async () => {
+            await db.sessions.clear();
+            await db.weeks.clear();
+            await db.programs.clear();
+            await db.exercises.clear();
+            await db.settings.clear();
+          },
+        );
+        await seedIfEmpty();
+      });
       await refresh();
     },
   };

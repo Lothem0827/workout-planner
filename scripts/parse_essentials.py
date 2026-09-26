@@ -13,7 +13,9 @@ from PIL import Image
 from rapidocr_onnxruntime import RapidOCR
 
 PDF = Path(r"C:\Users\CARL\Downloads\Essentials4x.pdf")
+LINKED = Path(r"C:\Users\CARL\Downloads\Documents\The Essentials Program 4x.pdf")
 OUT = Path(__file__).resolve().parents[1] / "data" / "essentials.json"
+LINK_PAGE = 19
 
 FIRST = 2
 LAST = 49
@@ -127,6 +129,54 @@ def rows_of(page):
     return rows
 
 
+def attach_videos(weeks):
+    """Exercise names in the source PDF are YouTube links. The outlined export drops them."""
+    if not LINKED.exists():
+        return {}
+    doc = pymupdf.open(LINKED)
+    demos = {}
+    flat_days = [day for week in weeks for day in week["days"]]
+    bands = ((140, 450), (960, 1130), (1130, 1320))
+
+    def url_in(links, top, bottom, band):
+        found = None
+        for x, y, uri in links:
+            if top <= y < bottom and band[0] <= x < band[1]:
+                found = uri
+        return found
+
+    for offset, day in enumerate(flat_days):
+        page = doc[LINK_PAGE + offset]
+        links = []
+        for link in page.get_links():
+            uri = (link.get("uri") or "").split("&")[0]
+            if "youtu" not in uri:
+                continue
+            rect = link["from"]
+            links.append(((rect.x0 + rect.x1) / 2, (rect.y0 + rect.y1) / 2, uri))
+        anchors = []
+        for x, y, _uri in links:
+            if bands[0][0] <= x < bands[0][1]:
+                if not anchors or y - anchors[-1] >= 36:
+                    anchors.append(y)
+        for index, exercise in enumerate(day["exercises"]):
+            if index >= len(anchors):
+                break
+            y = anchors[index]
+            top = (anchors[index - 1] + y) / 2 if index else y - 40
+            bottom = (y + anchors[index + 1]) / 2 if index + 1 < len(anchors) else y + 70
+            video, sub1, sub2 = (url_in(links, top, bottom, band) for band in bands)
+            exercise["videoUrl"] = video
+            for name, url in (
+                (exercise["name"], video),
+                (exercise["substitution1"], sub1),
+                (exercise["substitution2"], sub2),
+            ):
+                if name and url:
+                    demos.setdefault(name, url)
+    return demos
+
+
 def main():
     doc = pymupdf.open(PDF)
     weeks = []
@@ -140,8 +190,12 @@ def main():
         weeks[-1]["days"].append({"name": day_name, "label": day_name, "exercises": exercises})
         print(week_number, day_name, len(exercises), exercises[0]["name"] if exercises else "-", flush=True)
 
-    OUT.write_text(json.dumps({"name": "Upper/Lower", "weeks": weeks}, indent=2), encoding="utf-8")
-    print("wrote", OUT, flush=True)
+    demos = attach_videos(weeks)
+    OUT.write_text(
+        json.dumps({"name": "Upper/Lower", "demos": demos, "weeks": weeks}, indent=2),
+        encoding="utf-8",
+    )
+    print("wrote", OUT, "demos", len(demos), flush=True)
 
 
 if __name__ == "__main__":
