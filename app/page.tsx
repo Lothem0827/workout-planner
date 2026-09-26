@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { BodyMap } from "@/components/body-map";
 import {
   AlertDialog,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -15,30 +16,38 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useGym } from "@/lib/gym";
 import {
   activeSessionForSlot,
   fatigueScore,
-  formatDate,
   lastTrained,
   pickToday,
+  primariesOf,
   readyInHours,
   recoveryState,
   scoreForSlot,
-  todayKey,
 } from "@/lib/logic";
-import { MUSCLE_LABEL, MUSCLES, type Muscle, type RecoveryState, type Session } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { MUSCLE_LABEL, MUSCLES, type Muscle, type PlannedExercise, type RecoveryState } from "@/lib/types";
+
+const PREVIEW = 4;
+
+const DOT: Record<RecoveryState, string> = {
+  fresh: "bg-recovery-fresh",
+  recovering: "bg-recovery-recovering",
+  fatigued: "bg-recovery-fatigued",
+};
 
 export default function HomePage() {
   const gym = useGym();
   const router = useRouter();
   const [side, setSide] = useState<"front" | "back">("front");
   const [picked, setPicked] = useState<Muscle | null>(null);
-  const [others, setOthers] = useState(false);
-  const [choice, setChoice] = useState<Session | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
 
   const states = useMemo(() => {
     const next = {} as Record<Muscle, RecoveryState>;
@@ -49,12 +58,17 @@ export default function HomePage() {
   }, [gym.sessions, gym.map]);
 
   const today = pickToday(gym.week, gym.map, gym.sessions);
-  const pending = gym.week?.slots.filter((slot) => slot.status === "pending") ?? [];
-  const todayInProgress = today ? activeSessionForSlot(today.slot.id, gym.sessions) : null;
-  const index = today
-    ? (gym.week?.slots.filter((slot) => slot.status !== "dropped").findIndex((slot) => slot.id === today.slot.id) ?? 0) + 1
-    : 0;
-  const total = gym.week?.slots.filter((slot) => slot.status !== "dropped").length ?? 0;
+  const strip = gym.week?.slots.filter((slot) => slot.status !== "dropped") ?? [];
+  const selected = strip.find((slot) => slot.id === selectedId) ?? today?.slot ?? null;
+  const selectedSession = selected ? activeSessionForSlot(selected.id, gym.sessions) : null;
+  const switching = Boolean(today && selected && selected.id !== today.slot.id);
+  const index = selected ? strip.findIndex((slot) => slot.id === selected.id) + 1 : 0;
+  const total = strip.length;
+  const preview = selected?.exercises.slice(0, PREVIEW) ?? [];
+  const more = selected ? Math.max(0, selected.exercises.length - preview.length) : 0;
+  const muscles = selected ? [...primariesOf(selected.exercises, gym.map)] : [];
+  const notRecommended = selected ? scoreForSlot(selected, gym.map, gym.sessions).notRecommended : false;
+  const canStart = Boolean(selected && selected.status !== "done");
 
   function openSession(id: string) {
     router.push(`/workout?session=${id}`);
@@ -65,37 +79,95 @@ export default function HomePage() {
     if (id) openSession(id);
   }
 
-  async function restart(session: Session) {
-    const slotId = session.slotId;
-    if (!slotId) return;
-    await gym.deleteSession(session.id);
-    const id = await gym.startSlot(slotId);
-    if (id) openSession(id);
+  function launch(slotId: string) {
+    const session = activeSessionForSlot(slotId, gym.sessions);
+    if (session) openSession(session.id);
+    else void begin(slotId);
   }
 
-  function start(slotId: string) {
-    const existing = activeSessionForSlot(slotId, gym.sessions);
-    if (existing) {
-      setOthers(false);
-      setChoice(existing);
+  function startWorkout() {
+    if (!selected || !canStart) return;
+    if (switching) {
+      setConfirming(true);
       return;
     }
-    void begin(slotId);
+    launch(selected.id);
   }
 
   if (!gym.ready) {
     return (
       <main className="flex flex-col gap-4 px-4 py-5">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-96 w-full" />
-        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-8 w-2/3" />
       </main>
     );
   }
 
   return (
-    <main className="flex flex-col gap-4 px-4 py-5">
-      <p className="text-2xl font-semibold">{formatDate(todayKey())}</p>
+    <main className={cn("flex flex-col gap-4 px-4 pt-5", canStart ? "pb-28" : "pb-5")}>
+      {today ? (
+        <ol className="flex gap-2 overflow-x-auto">
+          {strip.map((slot) => {
+            const current = slot.id === selected?.id;
+            const isToday = slot.id === today.slot.id;
+            const done = slot.status === "done";
+            return (
+              <li key={slot.id} className="shrink-0">
+                <button
+                  type="button"
+                  aria-pressed={current}
+                  onClick={() => setSelectedId(slot.id)}
+                  className={cn(
+                    "rounded-lg border px-3 py-2 text-sm whitespace-nowrap focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                    current && "border-primary bg-primary text-primary-foreground",
+                    !current && done && "border-transparent bg-muted text-muted-foreground",
+                    !current && !done && isToday && "border-primary",
+                    !current && !done && !isToday && "border-border",
+                  )}
+                >
+                  <span className="sr-only">{isToday ? "Today" : done ? "Done" : "Pending"}. </span>
+                  {slot.name}
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      ) : null}
+
+      {!gym.program ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Build a program</CardTitle>
+            <CardDescription>Set the days you want to repeat each pass.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button className="w-full" render={<Link href="/train/edit?new=1" />} nativeButton={false}>
+              Add a plan
+            </Button>
+          </CardFooter>
+        </Card>
+      ) : today && selected ? (
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-semibold">{selected.name}</h1>
+          <p className="text-sm text-muted-foreground">
+            {gym.program.weeks?.length ? `Week ${gym.program.weekIndex ?? 1} of ${gym.program.weeks.length} · ` : ""}
+            Day {index} of {total}
+          </p>
+          {notRecommended ? <Badge variant="destructive">Not recommended</Badge> : null}
+        </div>
+      ) : (
+        <Card>
+          <CardContent>
+            <p className="text-muted-foreground">
+              {gym.program.weeks?.length
+                ? `Week ${gym.program.weekIndex ?? gym.program.weeks.length} of ${gym.program.weeks.length} is complete.`
+                : "This pass is complete. The next one uses your original program."}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <ToggleGroup
@@ -112,180 +184,125 @@ export default function HomePage() {
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
           <BodyMap side={side} states={states} picked={picked} onPick={setPicked} />
-          <div className="flex justify-center gap-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1"><i className="inline-block size-2 rounded-full bg-recovery-fresh" />Fresh</span>
-            <span className="flex items-center gap-1"><i className="inline-block size-2 rounded-full bg-recovery-recovering" />Recovering</span>
-            <span className="flex items-center gap-1"><i className="inline-block size-2 rounded-full bg-recovery-fatigued" />Fatigued</span>
-          </div>
+          <RecoveryLegend />
         </CardContent>
       </Card>
 
-      {picked ? (
-        <MuscleSheet
-          muscle={picked}
-          sessions={gym.sessions}
-          map={gym.map}
-          onClose={() => setPicked(null)}
-        />
-      ) : null}
-
-      {!gym.program ? (
+      {selected ? (
         <Card>
-          <CardHeader>
-            <CardTitle>Build a program</CardTitle>
-            <CardDescription>Set the days you want to repeat each pass.</CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button className="w-full" render={<Link href="/train/edit?new=1" />} nativeButton={false}>
-              Add a plan
-            </Button>
-          </CardFooter>
-        </Card>
-      ) : today ? (
-        <Card>
-          <CardHeader>
-            <CardDescription>
-              {gym.program.weeks?.length ? `Week ${gym.program.weekIndex ?? 1} of ${gym.program.weeks.length} · ` : ""}
-              {today.slot.name} · Day {index} of {total}
-            </CardDescription>
-            {today.notRecommended ? <Badge variant="destructive">Not recommended</Badge> : null}
-            <CardDescription>{today.slot.exercises.length} exercises</CardDescription>
-          </CardHeader>
-          <CardFooter className="flex-col items-stretch gap-3">
-            {todayInProgress ? (
-              <>
-                <Button className="w-full" onClick={() => openSession(todayInProgress.id)}>
-                  Resume
-                </Button>
-                <Button className="w-full" variant="outline" onClick={() => void restart(todayInProgress)}>
-                  Start again
-                </Button>
-              </>
-            ) : (
-              <Button className="w-full" onClick={() => void begin(today.slot.id)}>
-                Start
-              </Button>
-            )}
-            <div className="flex flex-wrap gap-3">
-              <Button variant="link" onClick={() => setOthers(true)}>
-                Do another day
-              </Button>
-              {pending.length > 0 ? (
-                <Button variant="link" render={<Link href="/train/shorten" />} nativeButton={false}>
-                  Fit into the days I have left
-                </Button>
-              ) : null}
-            </div>
-          </CardFooter>
-        </Card>
-      ) : (
-        <Card>
-          <CardContent>
-            <p className="text-muted-foreground">
-              {gym.program.weeks?.length
-                ? `Week ${gym.program.weekIndex ?? gym.program.weeks.length} of ${gym.program.weeks.length} is complete.`
-                : "This pass is complete. The next one uses your original program."}
-            </p>
+          <CardContent className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-2">
+              {preview.map((exercise) => (
+                <li key={exercise.id} className="flex items-baseline justify-between gap-3">
+                  <span>{gym.map.get(exercise.exerciseId)?.name ?? "Exercise"}</span>
+                  <span className="shrink-0 text-muted-foreground">{prescription(exercise)}</span>
+                </li>
+              ))}
+            </ul>
+            {more > 0 ? <p className="text-muted-foreground">{more} more</p> : null}
           </CardContent>
         </Card>
-      )}
+      ) : null}
 
-      <Drawer open={others} onOpenChange={setOthers}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>Unfinished days</DrawerTitle>
-            <DrawerDescription>Start a different day from this pass.</DrawerDescription>
-          </DrawerHeader>
-          <div className="flex max-h-[70dvh] flex-col gap-2 overflow-auto p-4">
-            {pending.map((slot) => {
-              const score = scoreForSlot(slot, gym.map, gym.sessions);
-              return (
-                <Button
-                  key={slot.id}
-                  type="button"
-                  variant="outline"
-                  className="h-auto w-full justify-between"
-                  onClick={() => start(slot.id)}
-                >
-                  <span>{slot.name}</span>
-                  {score.notRecommended ? (
-                    <Badge variant="destructive">Not recommended</Badge>
-                  ) : (
-                    <Badge>Ready</Badge>
-                  )}
-                </Button>
-              );
-            })}
+      {selected && muscles.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {muscles.map((muscle) => (
+            <Button key={muscle} type="button" variant="outline" onClick={() => setPicked(muscle)}>
+              <i className={cn("size-2 rounded-full", DOT[states[muscle]])} />
+              {MUSCLE_LABEL[muscle]}
+            </Button>
+          ))}
+        </div>
+      ) : null}
+
+      {canStart ? (
+        <div className="fixed inset-x-0 z-30 border-t bg-background bottom-[calc(env(safe-area-inset-bottom)+2.75rem)]">
+          <div className="mx-auto flex max-w-md px-4 py-3">
+            <Button className="w-full" size="lg" onClick={startWorkout}>
+              Start workout
+            </Button>
           </div>
-        </DrawerContent>
-      </Drawer>
+        </div>
+      ) : null}
 
-      <AlertDialog open={choice != null} onOpenChange={(open) => { if (!open) setChoice(null); }}>
+      <AlertDialog open={confirming} onOpenChange={setConfirming}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Workout in progress</AlertDialogTitle>
+            <AlertDialogTitle>Today is {today?.slot.name}</AlertDialogTitle>
             <AlertDialogDescription>
-              {choice?.name} is already started. Resume it, or start again.
+              {selectedSession ? "Continue" : "Start"} {selected?.name} instead?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                const session = choice;
-                setChoice(null);
-                if (session) void restart(session);
-              }}
-            >
-              Start again
-            </Button>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <Button
               type="button"
               onClick={() => {
-                const session = choice;
-                setChoice(null);
-                if (session) openSession(session.id);
+                const slotId = selected?.id;
+                setConfirming(false);
+                if (slotId) launch(slotId);
               }}
             >
-              Resume
+              {selectedSession ? "Continue" : "Start"} {selected?.name}
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Drawer open={picked != null} onOpenChange={(open) => { if (!open) setPicked(null); }}>
+        <DrawerContent>
+          {picked ? (
+            <MuscleDetail muscle={picked} sessions={gym.sessions} map={gym.map} />
+          ) : null}
+        </DrawerContent>
+      </Drawer>
+
     </main>
   );
 }
 
-function MuscleSheet({
+function prescription(exercise: PlannedExercise) {
+  const reps = exercise.repMin === exercise.repMax
+    ? `${exercise.repMin}`
+    : `${exercise.repMin}–${exercise.repMax}`;
+  const sets = exercise.sets === 1 ? "1 set" : `${exercise.sets} sets`;
+  return `${sets} · ${reps}`;
+}
+
+function RecoveryLegend() {
+  return (
+    <div className="flex justify-center gap-4 text-xs text-muted-foreground">
+      <span className="flex items-center gap-1"><i className="inline-block size-2 rounded-full bg-recovery-fresh" />Fresh</span>
+      <span className="flex items-center gap-1"><i className="inline-block size-2 rounded-full bg-recovery-recovering" />Recovering</span>
+      <span className="flex items-center gap-1"><i className="inline-block size-2 rounded-full bg-recovery-fatigued" />Fatigued</span>
+    </div>
+  );
+}
+
+function MuscleDetail({
   muscle,
   sessions,
   map,
-  onClose,
 }: {
   muscle: Muscle;
   sessions: ReturnType<typeof useGym>["sessions"];
   map: ReturnType<typeof useGym>["map"];
-  onClose: () => void;
 }) {
   const score = fatigueScore(muscle, sessions, map);
   const hours = readyInHours(muscle, score);
   const last = lastTrained(muscle, sessions, map);
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{MUSCLE_LABEL[muscle]}</CardTitle>
-        <CardDescription className="capitalize">{recoveryState(score)}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-1">
+    <>
+      <DrawerHeader>
+        <DrawerTitle>{MUSCLE_LABEL[muscle]}</DrawerTitle>
+        <DrawerDescription className="capitalize">{recoveryState(score)}</DrawerDescription>
+      </DrawerHeader>
+      <div className="flex flex-col gap-1 p-4">
         <p>{last ? `Last trained ${new Date(last).toLocaleDateString()}` : "Not trained yet"}</p>
         <p className="text-muted-foreground">
           {hours <= 0 ? "Ready now" : `Ready in about ${Math.ceil(hours)} hours`}
         </p>
-      </CardContent>
-      <CardFooter>
-        <Button variant="ghost" onClick={onClose}>Close</Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </>
   );
 }

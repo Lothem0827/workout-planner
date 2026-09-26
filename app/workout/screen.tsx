@@ -14,6 +14,8 @@ import { Toggle } from "@/components/ui/toggle";
 import { useGym } from "@/lib/gym";
 import { PlanScreen } from "./plan-screen";
 import { ExerciseSlide, SubstitutionSheet, substitutionChoices } from "./exercise-slide";
+import { RestOverlay } from "./rest-overlay";
+import { WorkoutSummary } from "./summary";
 import {
   activeSessionForWeek,
   doneSetCount,
@@ -45,10 +47,19 @@ function exerciseDone(exercise: SessionExercise) {
   return exercise.sets.length > 0 && exercise.sets.every((set) => set.done);
 }
 
-function formatClock(totalSeconds: number) {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+function restCaptionFor(
+  session: Session,
+  index: number,
+  map: Map<string, { name: string }>,
+) {
+  const exercise = session.exercises[index];
+  if (!exercise) return "Rest";
+  const name = map.get(exercise.exerciseId)?.name ?? "Exercise";
+  const done = exercise.sets.filter((set) => set.done).length;
+  if (done < exercise.sets.length) return `${name} · Set ${done + 1} of ${exercise.sets.length}`;
+  const next = session.exercises[index + 1];
+  if (!next) return name;
+  return map.get(next.exerciseId)?.name ?? "Next exercise";
 }
 
 function SessionScreen() {
@@ -67,6 +78,8 @@ function SessionScreen() {
   const [otherEquipment, setOtherEquipment] = useState(true);
   const [query, setQuery] = useState("");
   const [adding, setAdding] = useState(false);
+  const [summaryId, setSummaryId] = useState<string | null>(null);
+  const finishingRef = useRef(false);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef(0);
   const swipeRef = useRef<{ id: number; x: number; y: number; axis: "x" | "y" | null } | null>(null);
@@ -98,6 +111,28 @@ function SessionScreen() {
           <Skeleton className="h-48 w-full" />
         </div>
       </main>
+    );
+  }
+  if (summaryId) {
+    const finished = gym.sessions.find((session) => session.id === summaryId);
+    if (!finished || finished.status !== "finished") {
+      return (
+        <main className="min-h-dvh bg-background">
+          <StackHeader title="Workout" fallback="/" />
+          <div className="flex flex-col gap-4 px-4 py-4">
+            <Skeleton className="h-8 w-40" />
+            <Skeleton className="h-24 w-full" />
+          </div>
+        </main>
+      );
+    }
+    return (
+      <WorkoutSummary
+        session={finished}
+        map={gym.map}
+        unit={gym.settings.unit}
+        onDone={() => router.push("/")}
+      />
     );
   }
   if (!active) {
@@ -149,6 +184,7 @@ function SessionScreen() {
   const current = session.exercises[safeIndex];
   const currentDone = current ? exerciseDone(current) : true;
   const isLast = safeIndex >= session.exercises.length - 1;
+  const restCaption = restCaptionFor(session, safeIndex, gym.map);
   const subsExercise = subsId
     ? session.exercises.find((item) => item.id === subsId) ?? null
     : null;
@@ -232,8 +268,27 @@ function SessionScreen() {
     if (!isLast) goTo(safeIndex + 1);
   }
 
+  async function finish() {
+    if (finishingRef.current) return;
+    finishingRef.current = true;
+    setRestUntil(null);
+    setSummaryId(session.id);
+    try {
+      await gym.finishSession(session.id);
+    } catch {
+      finishingRef.current = false;
+      setSummaryId(null);
+    }
+  }
+
+  const readyToFinish = Boolean(current && currentDone && isLast);
+
   return (
-    <main className="-mb-[env(safe-area-inset-bottom)] flex h-dvh flex-col overflow-hidden bg-background">
+    <>
+    <main
+      inert={restLeft > 0 ? true : undefined}
+      className="-mb-[env(safe-area-inset-bottom)] flex h-dvh flex-col overflow-hidden bg-background"
+    >
       <StackHeader
         title={session.name}
         fallback="/"
@@ -242,9 +297,8 @@ function SessionScreen() {
         <Button
           type="button"
           className="mr-2 shrink-0"
-          onClick={async () => {
-            await gym.finishSession(session.id);
-            router.push("/");
+          onClick={() => {
+            void finish();
           }}
         >
           Finish
@@ -281,49 +335,20 @@ function SessionScreen() {
         ))}
       </div>
       <div className="shrink-0 bg-background px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
-        {restLeft > 0 ? (
-          <div className="mb-2 flex items-center justify-between rounded-2xl bg-[#3dce73] px-4 py-4 text-[#06381a]">
-            <button
-              type="button"
-              className="text-sm font-medium"
-              onClick={() => setRestUntil((value) => (value ?? Date.now()) - 15_000)}
-            >
-              −15s
-            </button>
-            <p className="flex items-baseline gap-2 text-white">
-              <span className="text-5xl font-semibold tabular-nums leading-none">
-                {formatClock(restLeft)}
-              </span>
-              <span className="text-sm font-medium">Rest</span>
-            </p>
-            <button
-              type="button"
-              className="text-sm font-medium"
-              onClick={() => setRestUntil((value) => (value ?? Date.now()) + 15_000)}
-            >
-              +15s
-            </button>
-          </div>
-        ) : null}
-        {restLeft > 0 ? (
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-12 w-full text-base font-semibold"
-            onClick={() => setRestUntil(null)}
-          >
-            Skip Rest
-          </Button>
-        ) : (
-          <Button
-            type="button"
-            className="h-12 w-full text-base"
-            disabled={!current || (currentDone && isLast)}
-            onClick={logOrNext}
-          >
-            {currentDone && !isLast ? "Next" : "Log Set"}
-          </Button>
-        )}
+        <Button
+          type="button"
+          className="h-12 w-full text-base"
+          disabled={!current}
+          onClick={() => {
+            if (readyToFinish) {
+              void finish();
+              return;
+            }
+            logOrNext();
+          }}
+        >
+          {readyToFinish ? "Finish" : currentDone && !isLast ? "Next" : "Log Set"}
+        </Button>
       </div>
       {subsExercise && subsChoices.length ? (
         <SubstitutionSheet
@@ -356,6 +381,16 @@ function SessionScreen() {
         />
       ) : null}
     </main>
+    {restLeft > 0 ? (
+      <RestOverlay
+        secondsLeft={restLeft}
+        caption={restCaption}
+        onSubtract={() => setRestUntil((value) => (value ?? Date.now()) - 15_000)}
+        onAdd={() => setRestUntil((value) => (value ?? Date.now()) + 15_000)}
+        onSkip={() => setRestUntil(null)}
+      />
+    ) : null}
+    </>
   );
 
   async function applySwap(sessionExerciseId: string, lib: LibraryExercise, permanent: boolean) {
