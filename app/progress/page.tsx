@@ -4,19 +4,9 @@ import Link from "next/link";
 import { SettingsIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { MonthCalendar } from "@/components/month-calendar";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGym } from "@/lib/gym";
@@ -134,7 +124,7 @@ export default function ProgressPage() {
           <DrawerHeader>
             <DrawerTitle>Settings</DrawerTitle>
           </DrawerHeader>
-          <div className="flex flex-col gap-2 p-4">
+          <div className="flex flex-col gap-2 px-4 pt-6 pb-4">
             {gym.program ? (
               <Button type="button" variant="destructive" className="w-full" onClick={() => ask("plan")}>
                 Delete workout plan
@@ -146,26 +136,32 @@ export default function ProgressPage() {
           </div>
         </DrawerContent>
       </Drawer>
-      <AlertDialog open={confirm != null} onOpenChange={(open) => { if (!open && !pending) setConfirm(null); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
+      <Drawer
+        open={confirm != null}
+        onOpenChange={(open) => { if (!open && !pending) setConfirm(null); }}
+        showSwipeHandle
+      >
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>
               {confirm === "plan" ? `Delete ${gym.program?.name ?? "workout plan"}` : "Clear all data"}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
+            </DrawerTitle>
+            <DrawerDescription>
               {confirm === "plan"
                 ? "This removes the plan and its current week. Finished workouts stay in your log."
                 : "Workouts, programs, and custom exercises will be removed. This cannot be undone."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" disabled={pending} onClick={() => void confirmAction()}>
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <Button type="button" variant="destructive" className="w-full" disabled={pending} onClick={() => void confirmAction()}>
               {confirm === "plan" ? "Delete" : "Clear"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+            <Button type="button" variant="outline" className="w-full" disabled={pending} onClick={() => setConfirm(null)}>
+              Cancel
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </main>
   );
 }

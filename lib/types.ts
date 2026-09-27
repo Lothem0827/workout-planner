@@ -105,6 +105,7 @@ export interface SetLog {
   reps: number | null;
   done: boolean;
   pr?: boolean;
+  restMs?: number;
 }
 
 export interface SessionExercise extends Prescription {
@@ -126,6 +127,7 @@ export interface Session {
   status: "active" | "finished";
   startedAt: number;
   finishedAt?: number;
+  skipRest?: boolean;
   exercises: SessionExercise[];
 }
 

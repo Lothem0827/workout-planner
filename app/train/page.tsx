@@ -4,17 +4,9 @@ import Link from "next/link";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGym } from "@/lib/gym";
@@ -93,18 +85,18 @@ export default function TrainPage() {
           </EmptyContent>
         </Empty>
       )}
-      <AlertDialog open={switchTo != null} onOpenChange={(open) => { if (!open) setSwitchTo(null); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Ongoing workout</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Drawer open={switchTo != null} onOpenChange={(open) => { if (!open) setSwitchTo(null); }} showSwipeHandle>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Ongoing workout</DrawerTitle>
+            <DrawerDescription>
               {dialogNames.current} is already started. Start {dialogNames.next} instead? You can always come back to {dialogNames.current}.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
             <Button
               type="button"
+              className="w-full"
               onClick={() => {
                 const id = switchTo;
                 setSwitchTo(null);
@@ -113,9 +105,12 @@ export default function TrainPage() {
             >
               Start
             </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            <Button type="button" variant="outline" className="w-full" onClick={() => setSwitchTo(null)}>
+              Cancel
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </main>
   );
 }

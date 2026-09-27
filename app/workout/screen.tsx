@@ -80,6 +80,8 @@ function SessionScreen() {
   const [adding, setAdding] = useState(false);
   const [summaryId, setSummaryId] = useState<string | null>(null);
   const finishingRef = useRef(false);
+  const sessionRef = useRef<Session | null>(null);
+  const pendingWrites = useRef(0);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef(0);
   const swipeRef = useRef<{ id: number; x: number; y: number; axis: "x" | "y" | null } | null>(null);
@@ -152,23 +154,29 @@ function SessionScreen() {
   }
 
   const session = active;
+  if (pendingWrites.current === 0) sessionRef.current = session;
   const seconds = Math.max(0, Math.floor((now - session.startedAt) / 1000));
   const clock = `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
   const restLeft = restUntil
     ? Math.max(0, Math.ceil((restUntil - now) / 1000))
     : 0;
 
-  async function update(next: Session) {
-    await gym.saveSession(next);
+  function update(next: Session) {
+    sessionRef.current = next;
+    pendingWrites.current += 1;
+    return gym.saveSession(next).finally(() => {
+      pendingWrites.current -= 1;
+    });
   }
 
   function patchExercise(
     exerciseId: string,
     patch: (exercise: SessionExercise) => SessionExercise,
   ) {
+    const current = sessionRef.current ?? session;
     return {
-      ...session,
-      exercises: session.exercises.map((exercise) =>
+      ...current,
+      exercises: current.exercises.map((exercise) =>
         exercise.id === exerciseId ? patch(exercise) : exercise,
       ),
     };
@@ -252,6 +260,11 @@ function SessionScreen() {
     setQuery("");
   }
 
+  function startRest(durationMs: number) {
+    if (session.skipRest || durationMs <= 0) return;
+    setRestUntil(Date.now() + durationMs);
+  }
+
   function logOrNext() {
     if (!current) return;
     const open = current.sets.find((set) => !set.done);
@@ -262,7 +275,7 @@ function SessionScreen() {
           sets: item.sets.map((row) => (row.id === open.id ? { ...row, done: true } : row)),
         })),
       );
-      setRestUntil(Date.now() + restMs(current.rest));
+      startRest(open.restMs ?? restMs(current.rest));
       return;
     }
     if (!isLast) goTo(safeIndex + 1);
@@ -290,12 +303,20 @@ function SessionScreen() {
       className="-mb-[env(safe-area-inset-bottom)] flex h-dvh flex-col overflow-hidden bg-background"
     >
       <StackHeader
-        title={session.name}
+        title={
+          <>
+            {session.name}
+            {session.weekIndex ? (
+              <span className="text-sm font-normal text-muted-foreground"> · Week {session.weekIndex}</span>
+            ) : null}
+          </>
+        }
         fallback="/"
         detail={`${clock} · ${formatLoad(volumeKg(session), gym.settings.unit)} · ${doneSetCount(session)} sets`}
       >
         <Button
           type="button"
+          variant={isLast ? "default" : "secondary"}
           className="mr-2 shrink-0"
           onClick={() => {
             void finish();
@@ -322,7 +343,6 @@ function SessionScreen() {
             map={gym.map}
             unit={gym.settings.unit}
             builtin={gym.program?.builtin}
-            weekIndex={session.weekIndex}
             segments={segments}
             activeIndex={safeIndex}
             onJump={goTo}
@@ -330,7 +350,12 @@ function SessionScreen() {
             onPatch={(patch) => {
               void update(patchExercise(exercise.id, patch));
             }}
-            onLoggedSet={() => setRestUntil(Date.now() + restMs(exercise.rest))}
+            onLoggedSet={(durationMs) => startRest(durationMs)}
+            skipRest={Boolean(session.skipRest)}
+            onSkipRest={(skip) => {
+              const current = sessionRef.current ?? session;
+              void update({ ...current, skipRest: skip || undefined });
+            }}
           />
         ))}
       </div>

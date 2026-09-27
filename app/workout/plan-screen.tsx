@@ -5,20 +5,10 @@ import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, ty
 import { useRouter } from "next/navigation";
 import { DayMuscle } from "@/components/day-muscle";
 import { StackHeader } from "@/components/stack-header";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -213,7 +203,7 @@ export function PlanScreen({ planId }: { planId: string }) {
           <DrawerHeader>
             <DrawerTitle>Settings</DrawerTitle>
           </DrawerHeader>
-          <div className="flex flex-col gap-4 p-4">
+          <div className="flex flex-col gap-4 px-4 pt-6 pb-4">
             <Button
               type="button"
               variant="outline"
@@ -263,22 +253,28 @@ export function PlanScreen({ planId }: { planId: string }) {
           </div>
         </DrawerContent>
       </Drawer>
-      <AlertDialog open={confirmDelete} onOpenChange={(open) => { if (!open && !pending) setConfirmDelete(false); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete {program.name}</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Drawer
+        open={confirmDelete}
+        onOpenChange={(open) => { if (!open && !pending) setConfirmDelete(false); }}
+        showSwipeHandle
+      >
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Delete {program.name}</DrawerTitle>
+            <DrawerDescription>
               This removes the plan and its current week. Finished workouts stay in your log.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={pending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" disabled={pending} onClick={() => void remove()}>
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <Button type="button" variant="destructive" className="w-full" disabled={pending} onClick={() => void remove()}>
               Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+            <Button type="button" variant="outline" className="w-full" disabled={pending} onClick={() => setConfirmDelete(false)}>
+              Cancel
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </main>
   );
 }

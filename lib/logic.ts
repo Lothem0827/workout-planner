@@ -46,19 +46,20 @@ export function formatDate(key: string) {
   });
 }
 
+// Half-life of one set of fatigue. Three direct sets are fresh (score < 0.25) after ~3.6 half-lives.
 const HALF_HOURS: Record<Muscle, number> = {
-  biceps: 36,
-  triceps: 36,
-  calves: 36,
-  shoulders: 36,
-  abs: 36,
-  chest: 48,
-  lats: 48,
-  traps: 48,
-  lowerBack: 48,
-  quads: 48,
-  hamstrings: 48,
-  glutes: 48,
+  abs: 7,
+  calves: 10,
+  biceps: 14,
+  shoulders: 14,
+  triceps: 17,
+  chest: 17,
+  lats: 17,
+  traps: 17,
+  glutes: 17,
+  hamstrings: 20,
+  quads: 24,
+  lowerBack: 24,
 };
 
 export function e1rm(weightKg: number, reps: number) {
@@ -454,6 +455,8 @@ export function chartPoints(exerciseId: string, sessions: Session[]) {
   return points;
 }
 
+const REST_PRESET_MS = [30_000, 45_000, 60_000, 90_000, 120_000, 150_000, 180_000, 240_000, 300_000];
+
 export function restMs(rest?: string | null) {
   const numbers = rest
     ? [...rest.matchAll(/\d+(?:\.\d+)?/g)]
@@ -464,6 +467,21 @@ export function restMs(rest?: string | null) {
   const amount = Math.max(...numbers);
   if (rest && /sec/i.test(rest)) return Math.round(amount * 1000);
   return Math.round(amount * 60_000);
+}
+
+export function formatRestClock(ms: number) {
+  const total = Math.max(0, Math.round(ms / 1000));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
+export function restOptions(currentMs: number) {
+  const values = REST_PRESET_MS.includes(currentMs)
+    ? REST_PRESET_MS
+    : [...REST_PRESET_MS, currentMs].sort((a, b) => a - b);
+  return values.map((ms) => ({ value: String(ms), label: formatRestClock(ms) }));
 }
 
 export function workingSetCount(planned: { workingSets?: string; sets: number }) {

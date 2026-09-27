@@ -2,18 +2,9 @@
 
 import { use, useState } from "react";
 import { StackHeader } from "@/components/stack-header";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -128,26 +119,30 @@ export default function LogDatePage({ params }: { params: Promise<{ date: string
           </Card>
         ))}
       </div>
-      <AlertDialog open={confirmId != null} onOpenChange={(open) => { if (!open) setConfirmId(null); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete session</AlertDialogTitle>
-            <AlertDialogDescription>This removes the workout from your log.</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
+      <Drawer open={confirmId != null} onOpenChange={(open) => { if (!open) setConfirmId(null); }} showSwipeHandle>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Delete session</DrawerTitle>
+            <DrawerDescription>This removes the workout from your log.</DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <Button
+              type="button"
               variant="destructive"
+              className="w-full"
               onClick={() => {
                 if (confirmId) void gym.deleteSession(confirmId);
                 setConfirmId(null);
               }}
             >
               Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </Button>
+            <Button type="button" variant="outline" className="w-full" onClick={() => setConfirmId(null)}>
+              Cancel
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </main>
   );
 }

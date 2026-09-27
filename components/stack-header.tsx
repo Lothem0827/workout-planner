@@ -11,7 +11,7 @@ export function StackHeader({
   children,
   below,
 }: {
-  title: string;
+  title: React.ReactNode;
   fallback: string;
   detail?: string;
   children?: React.ReactNode;

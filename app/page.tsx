@@ -4,19 +4,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BodyMap } from "@/components/body-map";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useGym } from "@/lib/gym";
@@ -69,6 +60,7 @@ export default function HomePage() {
   const muscles = selected ? [...primariesOf(selected.exercises, gym.map)] : [];
   const notRecommended = selected ? scoreForSlot(selected, gym.map, gym.sessions).notRecommended : false;
   const canStart = Boolean(selected && selected.status !== "done");
+  const pendingCount = gym.week?.slots.filter((slot) => slot.status === "pending").length ?? 0;
 
   function openSession(id: string) {
     router.push(`/workout?session=${id}`);
@@ -154,6 +146,16 @@ export default function HomePage() {
             {gym.program.weeks?.length ? `Week ${gym.program.weekIndex ?? 1} of ${gym.program.weeks.length} · ` : ""}
             Day {index} of {total}
           </p>
+          {pendingCount > 1 ? (
+            <Button
+              variant="link"
+              className="h-auto justify-start px-0"
+              render={<Link href="/train/shorten" />}
+              nativeButton={false}
+            >
+              Fit this week
+            </Button>
+          ) : null}
           {notRecommended ? <Badge variant="destructive">Not recommended</Badge> : null}
         </div>
       ) : (
@@ -225,18 +227,18 @@ export default function HomePage() {
         </div>
       ) : null}
 
-      <AlertDialog open={confirming} onOpenChange={setConfirming}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Today is {today?.slot.name}</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Drawer open={confirming} onOpenChange={setConfirming} showSwipeHandle>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Today is {today?.slot.name}</DrawerTitle>
+            <DrawerDescription>
               {selectedSession ? "Continue" : "Start"} {selected?.name} instead?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
             <Button
               type="button"
+              className="w-full"
               onClick={() => {
                 const slotId = selected?.id;
                 setConfirming(false);
@@ -245,9 +247,12 @@ export default function HomePage() {
             >
               {selectedSession ? "Continue" : "Start"} {selected?.name}
             </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            <Button type="button" variant="outline" className="w-full" onClick={() => setConfirming(false)}>
+              Cancel
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
 
       <Drawer open={picked != null} onOpenChange={(open) => { if (!open) setPicked(null); }}>
         <DrawerContent>
