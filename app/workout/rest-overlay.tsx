@@ -91,36 +91,32 @@ export function RestOverlay({
   const clock = formatRestClock(secondsLeft);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black text-white">
-      <div className="shrink-0 pt-[env(safe-area-inset-top)]">
-        <div className="flex items-center px-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="text-white hover:bg-white/10 hover:text-white"
-            onClick={onBack}
-            aria-label="Back to exercises"
-          >
-            <ChevronLeftIcon />
-          </Button>
-        </div>
-        <div className="px-5 pb-4 text-center">
-          <p
-            role="timer"
-            aria-label={`Rest ${clock}`}
-            className={cn(
-              "text-7xl font-semibold tabular-nums leading-none tracking-tight sm:text-8xl",
-              finalStretch && "motion-safe:animate-pulse",
-            )}
-          >
-            {clock}
-          </p>
-          <p className="mt-3 text-base text-white/80">{caption}</p>
-        </div>
+    <div className="fixed inset-0 z-50 flex h-dvh w-full flex-col overflow-hidden overscroll-none bg-black text-white">
+      <div className="relative shrink-0 px-12 pt-[max(1.25rem,env(safe-area-inset-top))] pb-4 text-center">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="absolute left-2 top-[max(0.5rem,env(safe-area-inset-top))] text-white hover:bg-white/10 hover:text-white"
+          onClick={onBack}
+          aria-label="Back to exercises"
+        >
+          <ChevronLeftIcon />
+        </Button>
+        <p
+          role="timer"
+          aria-label={`Rest ${clock}`}
+          className={cn(
+            "text-7xl font-semibold tabular-nums leading-none tracking-tight sm:text-8xl",
+            finalStretch && "motion-safe:animate-pulse",
+          )}
+        >
+          {clock}
+        </p>
+        <p className="mt-3 text-base text-white/80">{caption}</p>
       </div>
       <div
-        className={cn("relative min-h-0 flex-1 touch-none", finalStretch && "opacity-40")}
+        className={cn("relative min-h-0 flex-1 overflow-hidden touch-none", finalStretch && "opacity-40")}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         onPointerCancel={() => {
