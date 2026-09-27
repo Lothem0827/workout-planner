@@ -92,16 +92,15 @@ export function RestOverlay({
 
   return (
     <div className="fixed inset-0 z-50 flex h-dvh w-full flex-col overflow-hidden overscroll-none bg-black text-white">
-      <div className="relative shrink-0 px-12 pt-[max(1.25rem,env(safe-area-inset-top))] pb-4 text-center">
+      <div className="relative shrink-0 px-16 pt-[max(1.25rem,env(safe-area-inset-top))] pb-4 text-center">
         <Button
           type="button"
           variant="ghost"
-          size="icon"
-          className="absolute left-2 top-[max(0.5rem,env(safe-area-inset-top))] text-white hover:bg-white/10 hover:text-white"
+          className="absolute left-2 top-[max(0.35rem,env(safe-area-inset-top))] h-10 gap-0.5 pl-1 text-white hover:bg-white/10 hover:text-white"
           onClick={onBack}
-          aria-label="Back to exercises"
         >
           <ChevronLeftIcon />
+          Back
         </Button>
         <p
           role="timer"
