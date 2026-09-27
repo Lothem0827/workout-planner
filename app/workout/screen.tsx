@@ -14,7 +14,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { useGym } from "@/lib/gym";
 import { PlanScreen } from "./plan-screen";
 import { ExerciseSlide, SubstitutionSheet, substitutionChoices } from "./exercise-slide";
-import { RestOverlay } from "./rest-overlay";
+import { formatRestClock, RestOverlay } from "./rest-overlay";
 import { WorkoutSummary } from "./summary";
 import {
   activeSessionForWeek,
@@ -72,6 +72,7 @@ function SessionScreen() {
   const active = requested ?? activeSessionForWeek(gym.week, gym.sessions);
   const [now, setNow] = useState(Date.now());
   const [restUntil, setRestUntil] = useState<number | null>(null);
+  const [restPeeking, setRestPeeking] = useState(false);
   const [swapId, setSwapId] = useState<string | null>(null);
   const [subsId, setSubsId] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
@@ -262,6 +263,7 @@ function SessionScreen() {
 
   function startRest(durationMs: number) {
     if (session.skipRest || durationMs <= 0) return;
+    setRestPeeking(false);
     setRestUntil(Date.now() + durationMs);
   }
 
@@ -285,6 +287,7 @@ function SessionScreen() {
     if (finishingRef.current) return;
     finishingRef.current = true;
     setRestUntil(null);
+    setRestPeeking(false);
     setSummaryId(session.id);
     try {
       await gym.finishSession(session.id);
@@ -299,7 +302,7 @@ function SessionScreen() {
   return (
     <>
     <main
-      inert={restLeft > 0 ? true : undefined}
+      inert={restLeft > 0 && !restPeeking ? true : undefined}
       className="-mb-[env(safe-area-inset-bottom)] flex h-dvh flex-col overflow-hidden bg-background"
     >
       <StackHeader
@@ -360,6 +363,19 @@ function SessionScreen() {
         ))}
       </div>
       <div className="shrink-0 bg-background px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        {restLeft > 0 && restPeeking ? (
+          <button
+            type="button"
+            className="mb-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#3dce73] px-4 py-3 text-white"
+            onClick={() => setRestPeeking(false)}
+            aria-label={`Rest ${formatRestClock(restLeft)}, return to timer`}
+          >
+            <span className="text-3xl font-semibold tabular-nums leading-none">
+              {formatRestClock(restLeft)}
+            </span>
+            <span className="text-sm font-medium">Rest</span>
+          </button>
+        ) : null}
         <Button
           type="button"
           className="h-12 w-full text-base"
@@ -406,13 +422,17 @@ function SessionScreen() {
         />
       ) : null}
     </main>
-    {restLeft > 0 ? (
+    {restLeft > 0 && !restPeeking ? (
       <RestOverlay
         secondsLeft={restLeft}
         caption={restCaption}
+        onBack={() => setRestPeeking(true)}
         onSubtract={() => setRestUntil((value) => (value ?? Date.now()) - 15_000)}
         onAdd={() => setRestUntil((value) => (value ?? Date.now()) + 15_000)}
-        onSkip={() => setRestUntil(null)}
+        onSkip={() => {
+          setRestPeeking(false);
+          setRestUntil(null);
+        }}
       />
     ) : null}
     </>

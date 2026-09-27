@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { ChevronLeftIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createSnake, GRID, queueDir, step, TICK_MS, type Dir, type SnakeState } from "./rest-snake";
@@ -12,7 +13,7 @@ const KEY_DIR: Record<string, Dir> = {
   ArrowRight: "right",
 };
 
-function formatClock(totalSeconds: number) {
+export function formatRestClock(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
@@ -21,12 +22,14 @@ function formatClock(totalSeconds: number) {
 export function RestOverlay({
   secondsLeft,
   caption,
+  onBack,
   onSubtract,
   onAdd,
   onSkip,
 }: {
   secondsLeft: number;
   caption: string;
+  onBack: () => void;
   onSubtract: () => void;
   onAdd: () => void;
   onSkip: () => void;
@@ -85,11 +88,20 @@ export function RestOverlay({
     turn(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "right" : "left") : dy > 0 ? "down" : "up");
   }
 
-  const clock = formatClock(secondsLeft);
+  const clock = formatRestClock(secondsLeft);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black text-white">
-      <div className="shrink-0 px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-4 text-center">
+    <div className="fixed inset-0 z-50 flex h-dvh w-full flex-col overflow-hidden overscroll-none bg-black text-white">
+      <div className="relative shrink-0 px-16 pt-[max(1.25rem,env(safe-area-inset-top))] pb-4 text-center">
+        <Button
+          type="button"
+          variant="ghost"
+          className="absolute left-2 top-[max(0.35rem,env(safe-area-inset-top))] h-10 gap-0.5 pl-1 text-white hover:bg-white/10 hover:text-white"
+          onClick={onBack}
+        >
+          <ChevronLeftIcon />
+          Back
+        </Button>
         <p
           role="timer"
           aria-label={`Rest ${clock}`}
@@ -103,7 +115,7 @@ export function RestOverlay({
         <p className="mt-3 text-base text-white/80">{caption}</p>
       </div>
       <div
-        className={cn("relative min-h-0 flex-1 touch-none", finalStretch && "opacity-40")}
+        className={cn("relative min-h-0 flex-1 overflow-hidden touch-none", finalStretch && "opacity-40")}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         onPointerCancel={() => {
