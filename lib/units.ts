@@ -7,10 +7,9 @@ export function toKg(value: number, unit: "kg" | "lb") {
 }
 
 export function formatWeight(kg: number | null, unit: "kg" | "lb") {
-  if (kg == null) return "";
-  const shown = fromKg(kg, unit);
-  const text = Number.isInteger(shown) ? String(shown) : shown.toFixed(1);
-  return text;
+  if (kg == null || !Number.isFinite(kg)) return "";
+  const shown = Math.round(fromKg(kg, unit) * 10) / 10;
+  return Number.isInteger(shown) ? String(shown) : shown.toFixed(1);
 }
 
 export function formatLoad(kg: number, unit: "kg" | "lb") {

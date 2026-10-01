@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronLeftIcon } from "lucide-react";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -12,7 +13,7 @@ const KEY_DIR: Record<string, Dir> = {
   ArrowRight: "right",
 };
 
-function formatClock(totalSeconds: number) {
+export function formatClock(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
@@ -21,12 +22,14 @@ function formatClock(totalSeconds: number) {
 export function RestOverlay({
   secondsLeft,
   caption,
+  onBack,
   onSubtract,
   onAdd,
   onSkip,
 }: {
   secondsLeft: number;
   caption: string;
+  onBack: () => void;
   onSubtract: () => void;
   onAdd: () => void;
   onSkip: () => void;
@@ -34,14 +37,6 @@ export function RestOverlay({
   const [state, setState] = useState<SnakeState>(createSnake);
   const swipe = useRef<{ x: number; y: number } | null>(null);
   const finalStretch = secondsLeft <= 10;
-
-  useEffect(() => {
-    const startedAt = performance.now();
-    return () => {
-      if (performance.now() - startedAt < 400) return;
-      navigator.vibrate?.(40);
-    };
-  }, []);
 
   useEffect(() => {
     if (!state.started || finalStretch) return;
@@ -89,7 +84,17 @@ export function RestOverlay({
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black text-white">
-      <div className="shrink-0 px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-4 text-center">
+      <div className="relative shrink-0 px-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-4 text-center">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="absolute top-[max(0.5rem,env(safe-area-inset-top))] left-2 text-white hover:bg-white/10 hover:text-white"
+          aria-label="Back to workout"
+          onClick={onBack}
+        >
+          <ChevronLeftIcon />
+        </Button>
         <p
           role="timer"
           aria-label={`Rest ${clock}`}

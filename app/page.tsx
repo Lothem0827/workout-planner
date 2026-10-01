@@ -218,7 +218,7 @@ export default function HomePage() {
       ) : null}
 
       {canStart ? (
-        <div className="fixed inset-x-0 z-30 border-t bg-background bottom-[calc(env(safe-area-inset-bottom)+2.75rem)]">
+        <div className="fixed inset-x-0 z-30 border-t bg-background bottom-[calc(env(safe-area-inset-bottom)+2.75rem+var(--active-bar-height,0px))]">
           <div className="mx-auto flex max-w-md px-4 py-3">
             <Button className="w-full" size="lg" onClick={startWorkout}>
               Start workout

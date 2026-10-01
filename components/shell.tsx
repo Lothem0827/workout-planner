@@ -1,7 +1,9 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ACTIVE_BAR_HEIGHT, ActiveWorkoutBar, useActiveSession } from "@/components/active-workout-bar";
 import { cn } from "@/lib/utils";
 
 const TABS = [
@@ -15,13 +17,23 @@ const ROOTS = new Set(["/", "/train", "/progress"]);
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const root = ROOTS.has(pathname);
+  const session = useActiveSession();
+  const showBar = Boolean(session) && !pathname.startsWith("/workout");
   const pageClass = root
-    ? "pb-24 pt-[env(safe-area-inset-top)]"
-    : "pb-[env(safe-area-inset-bottom)]";
+    ? showBar
+      ? "pb-[calc(6rem+var(--active-bar-height))] pt-[env(safe-area-inset-top)]"
+      : "pb-24 pt-[env(safe-area-inset-top)]"
+    : showBar
+      ? "pb-[calc(env(safe-area-inset-bottom)+var(--active-bar-height))]"
+      : "pb-[env(safe-area-inset-bottom)]";
 
   return (
-    <div className="mx-auto min-h-dvh w-full max-w-md bg-background">
+    <div
+      className="mx-auto min-h-dvh w-full max-w-md bg-background"
+      style={{ "--active-bar-height": showBar ? ACTIVE_BAR_HEIGHT : "0px" } as CSSProperties}
+    >
       <div className={pageClass}>{children}</div>
+      {session && showBar ? <ActiveWorkoutBar session={session} root={root} /> : null}
       {root ? <TabBar pathname={pathname} /> : null}
     </div>
   );

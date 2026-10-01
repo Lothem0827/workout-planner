@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGym } from "@/lib/gym";
 import { formatDate } from "@/lib/logic";
-import { formatWeight, toKg } from "@/lib/units";
+import { WeightInput } from "@/components/weight-input";
 import type { Session } from "@/lib/types";
 
 export default function LogDatePage({ params }: { params: Promise<{ date: string }> }) {
@@ -65,11 +65,11 @@ export default function LogDatePage({ params }: { params: Promise<{ date: string
                           {index + 1}{set.pr ? " PR" : ""}
                           {rir ? <span className="block text-xs text-muted-foreground">RIR {rir}</span> : exercise.rpe ? <span className="block text-xs text-muted-foreground">RPE {exercise.rpe}</span> : null}
                         </span>
-                        <Input
-                          inputMode="decimal"
-                          value={formatWeight(set.weight, gym.settings.unit)}
-                          onChange={(event) => {
-                            const weight = event.target.value === "" ? null : toKg(Number(event.target.value), gym.settings.unit);
+                        <WeightInput
+                          as={Input}
+                          kg={set.weight}
+                          unit={gym.settings.unit}
+                          onWeight={(weight) => {
                             void save({
                               ...session,
                               exercises: session.exercises.map((item) =>

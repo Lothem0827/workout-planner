@@ -490,7 +490,7 @@ export function workingSetCount(planned: { workingSets?: string; sets: number })
   return planned.sets;
 }
 
-function copyPrescription(planned: PlannedExercise): Prescription {
+function copyPrescription(planned: Prescription): Prescription {
   return {
     technique: planned.technique,
     warmupSets: planned.warmupSets,
@@ -536,30 +536,107 @@ export function activeSessionForWeek(week: WeekPlan | null, sessions: Session[])
   return matches.sort((a, b) => b.startedAt - a.startedAt)[0] ?? null;
 }
 
+export function sessionExerciseFromPlanned(
+  planned: PlannedExercise,
+  sessions: Session[],
+  map: Map<string, LibraryExercise>,
+): SessionExercise {
+  const lib = map.get(planned.exerciseId);
+  const count = workingSetCount(planned);
+  const draft: SessionExercise = {
+    id: uid(),
+    exerciseId: planned.exerciseId,
+    ...copyPrescription(planned),
+    setsTarget: count,
+    repMin: planned.repMin,
+    repMax: planned.repMax,
+    sets: blankSets(count),
+  };
+  const suggestion = suggestedWeightKg(draft, lib, sessions);
+  if (suggestion != null) {
+    draft.sets = draft.sets.map((set) => ({ ...set, weight: suggestion.weight }));
+  }
+  return draft;
+}
+
+export function exerciseDone(exercise: SessionExercise) {
+  return exercise.sets.length > 0 && exercise.sets.every((set) => set.done);
+}
+
+export function currentExerciseIndex(session: Session) {
+  const open = session.exercises.findIndex((exercise) => !exerciseDone(exercise));
+  return open === -1 ? Math.max(0, session.exercises.length - 1) : open;
+}
+
+export function unloggedExercises(session: Session) {
+  return session.exercises.filter(
+    (exercise) => exercise.sets.length > 0 && exercise.sets.every((set) => !set.done),
+  );
+}
+
+/**
+ * Days in the session's own week that can still receive its unlogged
+ * exercises: every other pending day, never a finished or dropped one.
+ */
+export function carryOptions(session: Session, week: WeekPlan | null) {
+  if (!week || !session.slotId) return [];
+  if (!week.slots.some((slot) => slot.id === session.slotId)) return [];
+  if (!unloggedExercises(session).length) return [];
+  return week.slots.filter(
+    (slot) => slot.id !== session.slotId && slot.status === "pending",
+  );
+}
+
+/**
+ * Copies exercises that were never logged onto the chosen pending day of the
+ * same week. A day that already has the exercise gets a second copy, so the
+ * week still holds the planned sets for that muscle.
+ */
+export function carryUnloggedExercises(
+  session: Session,
+  week: WeekPlan,
+  targetSlotId: string,
+  sessions: Session[],
+  map: Map<string, LibraryExercise>,
+) {
+  const unlogged = unloggedExercises(session);
+  if (!unlogged.length) return;
+  const next = week.slots.find((slot) => slot.id === targetSlotId);
+  if (!next || next.status !== "pending" || next.id === session.slotId) return;
+  const live = sessions.find(
+    (item) => item.status === "active" && item.slotId === next.id,
+  );
+  for (const exercise of unlogged) {
+    const planned: PlannedExercise = {
+      id: uid(),
+      exerciseId: exercise.exerciseId,
+      sets: exercise.setsTarget,
+      repMin: exercise.repMin,
+      repMax: exercise.repMax,
+      ...copyPrescription(exercise),
+    };
+    next.exercises.push(planned);
+    if (live) {
+      live.exercises.push(
+        sessionExerciseFromPlanned(
+          planned,
+          sessions.filter((item) => item.id !== live.id),
+          map,
+        ),
+      );
+    }
+  }
+}
+
 export function sessionFromSlot(
   slot: WeekSlot,
   sessions: Session[],
   map: Map<string, LibraryExercise>,
   weekIndex?: number,
 ): Session {
-  const exercises: SessionExercise[] = slot.exercises.map((planned) => {
-    const lib = map.get(planned.exerciseId);
-    const count = workingSetCount(planned);
-    const draft: SessionExercise = {
-      id: uid(),
-      exerciseId: planned.exerciseId,
-      ...copyPrescription(planned),
-      setsTarget: count,
-      repMin: planned.repMin,
-      repMax: planned.repMax,
-      sets: blankSets(count),
-    };
-    const suggestion = suggestedWeightKg(draft, lib, sessions);
-    if (suggestion != null) {
-      draft.sets = draft.sets.map((set) => ({ ...set, weight: suggestion.weight }));
-    }
-    return draft;
-  });
+  const exercises: SessionExercise[] = slot.exercises.map((planned) =>
+    sessionExerciseFromPlanned(planned, sessions, map),
+  );
   return {
     id: uid(),
     date: todayKey(),

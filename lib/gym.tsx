@@ -12,6 +12,7 @@ import { db, seedIfEmpty } from "./db";
 import {
   applyPrs,
   byIdMap,
+  carryUnloggedExercises,
   exerciseTitle,
   newWeek,
   sessionFromSlot,
@@ -41,7 +42,7 @@ interface GymValue {
   saveWeek: (week: WeekPlan) => Promise<void>;
   saveSession: (session: Session) => Promise<void>;
   startSlot: (slotId: string) => Promise<string | null>;
-  finishSession: (sessionId: string) => Promise<void>;
+  finishSession: (sessionId: string, carryToSlotId?: string) => Promise<void>;
   setUnit: (unit: "kg" | "lb") => Promise<void>;
   addExercise: (input: {
     name: string;
@@ -224,7 +225,7 @@ export function GymProvider({ children }: { children: ReactNode }) {
       await refresh();
       return session.id;
     },
-    async finishSession(sessionId) {
+    async finishSession(sessionId, carryToSlotId) {
       const current = await loadAll();
       const session = current.sessions.find((item) => item.id === sessionId);
       if (!session) return;
@@ -238,6 +239,15 @@ export function GymProvider({ children }: { children: ReactNode }) {
       if (week) {
         const slot = week.slots.find((item) => item.id === session.slotId);
         if (slot) slot.status = "done";
+        if (carryToSlotId) {
+          carryUnloggedExercises(
+            session,
+            week,
+            carryToSlotId,
+            current.sessions,
+            byIdMap(current.exercises),
+          );
+        }
       }
       const nextSessions = current.sessions.map((item) =>
         item.id === session.id ? session : item,

@@ -37,7 +37,8 @@ import {
 } from "@/lib/logic";
 import { catalogGifUrl } from "@/lib/media";
 import { demoUrlFor, youtubeEmbed } from "@/lib/minmax";
-import { formatWeight, toKg } from "@/lib/units";
+import { formatWeight } from "@/lib/units";
+import { WeightInput } from "@/components/weight-input";
 import { cn } from "@/lib/utils";
 import type {
   LibraryExercise,
@@ -139,7 +140,7 @@ export function ExerciseSlide({
         : `${suggestion.repMin}–${suggestion.repMax}`;
   const embed = youtubeEmbed(demoUrlFor(name, builtin) ?? exercise.videoUrl);
   const gif = embed ? null : catalogGifUrl(lib?.id);
-  const openSetId = exercise.sets.find((set) => !set.done)?.id ?? null;
+  const perDb = /dumbbell|^db$/i.test(lib?.equipment ?? "");
   const alternatives = substitutionChoices(exercise, catalog, map);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [restOpen, setRestOpen] = useState(false);
@@ -340,7 +341,10 @@ export function ExerciseSlide({
         ) : null}
         <div className="mt-3 grid grid-cols-[4.75rem_1fr_1fr_4.5rem] items-center text-sm text-muted-foreground">
           <span>Set</span>
-          <span className="text-center">{unit === "kg" ? "Kg" : "Lb"}</span>
+          <span className="text-center">
+            {unit === "kg" ? "Kg" : "Lb"}
+            {perDb ? " (Per DB)" : ""}
+          </span>
           <span className="text-center">Reps</span>
           {activeE1rm ? (
             <span className="justify-self-end whitespace-nowrap text-right tabular-nums">
@@ -354,8 +358,6 @@ export function ExerciseSlide({
         <div className="flex flex-col gap-1.5">
           {exercise.sets.map((set, setIndex) => {
             const current = set.id === focusedSetId;
-            const perDb =
-              set.id === openSetId && /dumbbell|^db$/i.test(lib?.equipment ?? "");
             const prior = previousSets[setIndex];
             const valueClass = cn(
               "w-full bg-transparent text-center text-2xl tabular-nums outline-none placeholder:text-muted-foreground",
@@ -382,17 +384,14 @@ export function ExerciseSlide({
                   {set.pr ? " PR" : ""}
                 </span>
                 <div className="flex flex-col items-center">
-                  <input
-                    inputMode="decimal"
+                  <WeightInput
                     aria-label={`Set ${setIndex + 1} load`}
                     placeholder={prior ? formatWeight(prior.weight, unit) : undefined}
-                    value={formatWeight(set.weight, unit)}
+                    kg={set.weight}
+                    unit={unit}
                     onFocus={() => setFocusedSetId(set.id)}
-                    onChange={(event) => {
+                    onWeight={(weight) => {
                       setFocusedSetId(set.id);
-                      const raw = event.target.value;
-                      const weight =
-                        raw === "" ? null : toKg(Number(raw), unit);
                       onPatch((item) => ({
                         ...item,
                         sets: item.sets.map((row) =>
@@ -402,11 +401,6 @@ export function ExerciseSlide({
                     }}
                     className={valueClass}
                   />
-                  {perDb ? (
-                    <span className="text-xs text-muted-foreground">
-                      Per DB
-                    </span>
-                  ) : null}
                 </div>
                 <input
                   inputMode="numeric"

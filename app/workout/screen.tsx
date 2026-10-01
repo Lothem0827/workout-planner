@@ -4,7 +4,14 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointer
 import { useRouter, useSearchParams } from "next/navigation";
 import { StackHeader } from "@/components/stack-header";
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -14,17 +21,22 @@ import { Toggle } from "@/components/ui/toggle";
 import { useGym } from "@/lib/gym";
 import { PlanScreen } from "./plan-screen";
 import { ExerciseSlide, SubstitutionSheet, substitutionChoices } from "./exercise-slide";
-import { RestOverlay } from "./rest-overlay";
+import { RestOverlay, formatClock } from "./rest-overlay";
 import { WorkoutSummary } from "./summary";
 import {
   activeSessionForWeek,
+  carryOptions,
+  currentExerciseIndex,
   doneSetCount,
+  exerciseDone,
+  unloggedExercises,
   restMs,
   suggestedWeightKg,
   swapRank,
   volumeKg,
 } from "@/lib/logic";
 import { formatLoad } from "@/lib/units";
+import { cn } from "@/lib/utils";
 import {
   MUSCLE_LABEL,
   MUSCLES,
@@ -41,10 +53,6 @@ export function WorkoutScreen() {
   const sessionId = params.get("session");
   if (planId && !sessionId) return <PlanScreen planId={planId} />;
   return <SessionScreen />;
-}
-
-function exerciseDone(exercise: SessionExercise) {
-  return exercise.sets.length > 0 && exercise.sets.every((set) => set.done);
 }
 
 function restCaptionFor(
@@ -65,13 +73,17 @@ function restCaptionFor(
 function SessionScreen() {
   const gym = useGym();
   const router = useRouter();
-  const sessionId = useSearchParams().get("session");
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session");
+  const finishRequested = searchParams.get("finish") === "1";
   const requested = sessionId
     ? gym.sessions.find((session) => session.id === sessionId && session.status === "active")
     : null;
   const active = requested ?? activeSessionForWeek(gym.week, gym.sessions);
   const [now, setNow] = useState(Date.now());
   const [restUntil, setRestUntil] = useState<number | null>(null);
+  const [restOpen, setRestOpen] = useState(true);
+  const [restIndex, setRestIndex] = useState(0);
   const [swapId, setSwapId] = useState<string | null>(null);
   const [subsId, setSubsId] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
@@ -79,17 +91,71 @@ function SessionScreen() {
   const [query, setQuery] = useState("");
   const [adding, setAdding] = useState(false);
   const [summaryId, setSummaryId] = useState<string | null>(null);
+  const [carryOpen, setCarryOpen] = useState(false);
+  const [carrySlotId, setCarrySlotId] = useState<string | null>(null);
   const finishingRef = useRef(false);
+  const promptedRef = useRef(false);
   const sessionRef = useRef<Session | null>(null);
   const pendingWrites = useRef(0);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const indexRef = useRef(0);
+  const openedRef = useRef<string | null>(null);
   const swipeRef = useRef<{ id: number; x: number; y: number; axis: "x" | "y" | null } | null>(null);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
+
+  const restLeft = restUntil
+    ? Math.max(0, Math.ceil((restUntil - now) / 1000))
+    : 0;
+  const previousRestLeft = useRef(0);
+  useEffect(() => {
+    if (previousRestLeft.current > 0 && restLeft === 0) navigator.vibrate?.(40);
+    previousRestLeft.current = restLeft;
+  }, [restLeft]);
+
+  useEffect(() => {
+    if (!gym.ready || !active || openedRef.current === active.id) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    openedRef.current = active.id;
+    const target = currentExerciseIndex(active);
+    if (target <= 0) return;
+    indexRef.current = target;
+    el.scrollLeft = target * el.clientWidth;
+  }, [gym.ready, active]);
+
+  async function finishWith(id: string, carryToSlotId?: string) {
+    if (finishingRef.current) return;
+    finishingRef.current = true;
+    setRestUntil(null);
+    setCarryOpen(false);
+    setSummaryId(id);
+    try {
+      await gym.finishSession(id, carryToSlotId);
+    } catch {
+      finishingRef.current = false;
+      setSummaryId(null);
+      if (finishRequested) router.replace(`/workout?session=${id}`);
+    }
+  }
+
+  function requestFinish(target: Session) {
+    if (finishingRef.current) return;
+    if (carryOptions(target, gym.week).length) {
+      setCarryOpen(true);
+      return;
+    }
+    void finishWith(target.id);
+  }
+
+  useEffect(() => {
+    if (!finishRequested || !requested || finishingRef.current || promptedRef.current) return;
+    promptedRef.current = true;
+    requestFinish(requested);
+  });
 
   useEffect(() => {
     let lock: WakeLockSentinel | null = null;
@@ -104,7 +170,7 @@ function SessionScreen() {
     };
   }, []);
 
-  if (!gym.ready) {
+  if (!gym.ready || (finishRequested && requested && !summaryId && !carryOpen)) {
     return (
       <main className="min-h-dvh bg-background">
         <StackHeader title="Workout" fallback="/" />
@@ -157,9 +223,7 @@ function SessionScreen() {
   if (pendingWrites.current === 0) sessionRef.current = session;
   const seconds = Math.max(0, Math.floor((now - session.startedAt) / 1000));
   const clock = `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
-  const restLeft = restUntil
-    ? Math.max(0, Math.ceil((restUntil - now) / 1000))
-    : 0;
+  const restVisible = restLeft > 0 && restOpen;
 
   function update(next: Session) {
     sessionRef.current = next;
@@ -192,7 +256,11 @@ function SessionScreen() {
   const current = session.exercises[safeIndex];
   const currentDone = current ? exerciseDone(current) : true;
   const isLast = safeIndex >= session.exercises.length - 1;
-  const restCaption = restCaptionFor(session, safeIndex, gym.map);
+  const restCaption = restCaptionFor(
+    session,
+    Math.min(restIndex, Math.max(0, session.exercises.length - 1)),
+    gym.map,
+  );
   const subsExercise = subsId
     ? session.exercises.find((item) => item.id === subsId) ?? null
     : null;
@@ -262,6 +330,8 @@ function SessionScreen() {
 
   function startRest(durationMs: number) {
     if (session.skipRest || durationMs <= 0) return;
+    setRestIndex(indexRef.current);
+    setRestOpen(true);
     setRestUntil(Date.now() + durationMs);
   }
 
@@ -281,17 +351,18 @@ function SessionScreen() {
     if (!isLast) goTo(safeIndex + 1);
   }
 
-  async function finish() {
+  const unlogged = unloggedExercises(session);
+  const carryDays = carryOptions(session, gym.week);
+  const sessionSlotIndex = gym.week?.slots.findIndex((slot) => slot.id === session.slotId) ?? -1;
+  const defaultCarryDay =
+    carryDays.find((slot) => (gym.week?.slots.indexOf(slot) ?? -1) > sessionSlotIndex) ?? carryDays[0];
+  const chosenCarryDay =
+    carryDays.find((slot) => slot.id === carrySlotId) ?? defaultCarryDay;
+
+  function dismissCarry() {
     if (finishingRef.current) return;
-    finishingRef.current = true;
-    setRestUntil(null);
-    setSummaryId(session.id);
-    try {
-      await gym.finishSession(session.id);
-    } catch {
-      finishingRef.current = false;
-      setSummaryId(null);
-    }
+    setCarryOpen(false);
+    if (finishRequested) router.replace(`/workout?session=${session.id}`);
   }
 
   const readyToFinish = Boolean(current && currentDone && isLast);
@@ -299,7 +370,7 @@ function SessionScreen() {
   return (
     <>
     <main
-      inert={restLeft > 0 ? true : undefined}
+      inert={restVisible ? true : undefined}
       className="-mb-[env(safe-area-inset-bottom)] flex h-dvh flex-col overflow-hidden bg-background"
     >
       <StackHeader
@@ -319,7 +390,7 @@ function SessionScreen() {
           variant={isLast ? "default" : "secondary"}
           className="mr-2 shrink-0"
           onClick={() => {
-            void finish();
+            requestFinish(session);
           }}
         >
           Finish
@@ -360,13 +431,24 @@ function SessionScreen() {
         ))}
       </div>
       <div className="shrink-0 bg-background px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        {restLeft > 0 && !restOpen ? (
+          <button
+            type="button"
+            className="mb-2 flex h-11 w-full items-center justify-between gap-3 rounded-lg border bg-muted/40 px-3 text-left"
+            aria-label={`Rest ${formatClock(restLeft)}, open timer`}
+            onClick={() => setRestOpen(true)}
+          >
+            <span className="min-w-0 truncate text-sm text-muted-foreground">{restCaption}</span>
+            <span className="shrink-0 text-base font-semibold tabular-nums">{formatClock(restLeft)}</span>
+          </button>
+        ) : null}
         <Button
           type="button"
           className="h-12 w-full text-base"
           disabled={!current}
           onClick={() => {
             if (readyToFinish) {
-              void finish();
+              requestFinish(session);
               return;
             }
             logOrNext();
@@ -405,11 +487,82 @@ function SessionScreen() {
           }}
         />
       ) : null}
+      <Drawer
+        open={carryOpen && carryDays.length > 0}
+        onOpenChange={(open) => {
+          if (!open) dismissCarry();
+        }}
+        showSwipeHandle
+      >
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>
+              {unlogged.length === 1 ? "1 exercise not done" : `${unlogged.length} exercises not done`}
+            </DrawerTitle>
+            <DrawerDescription>
+              {unlogged
+                .map((exercise) => gym.map.get(exercise.exerciseId)?.name ?? "Exercise")
+                .join(", ")}
+              . Carry over to another day this week?
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="flex max-h-[50dvh] flex-col gap-2 overflow-auto px-4 pt-4">
+            {carryDays.map((slot) => {
+              const chosen = slot.id === chosenCarryDay?.id;
+              const doubled = unlogged.filter((exercise) =>
+                slot.exercises.some((item) => item.exerciseId === exercise.exerciseId),
+              ).length;
+              return (
+                <button
+                  key={slot.id}
+                  type="button"
+                  aria-pressed={chosen}
+                  onClick={() => setCarrySlotId(slot.id)}
+                  className={cn(
+                    "flex items-center justify-between gap-3 rounded-lg border px-3 py-3 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+                    chosen ? "border-primary bg-primary/10" : "border-border",
+                  )}
+                >
+                  <span className="font-medium">{slot.name}</span>
+                  {doubled > 0 ? (
+                    <span className="text-sm text-muted-foreground">
+                      {doubled === 1 ? "1 exercise doubled" : `${doubled} exercises doubled`}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+          <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <Button
+              type="button"
+              className="w-full"
+              disabled={!chosenCarryDay}
+              onClick={() => {
+                if (chosenCarryDay) void finishWith(session.id, chosenCarryDay.id);
+              }}
+            >
+              Carry over to {chosenCarryDay?.name}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                void finishWith(session.id);
+              }}
+            >
+              Finish without carrying over
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </main>
-    {restLeft > 0 ? (
+    {restVisible ? (
       <RestOverlay
         secondsLeft={restLeft}
         caption={restCaption}
+        onBack={() => setRestOpen(false)}
         onSubtract={() => setRestUntil((value) => (value ?? Date.now()) - 15_000)}
         onAdd={() => setRestUntil((value) => (value ?? Date.now()) + 15_000)}
         onSkip={() => setRestUntil(null)}
