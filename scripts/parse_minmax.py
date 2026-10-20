@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pymupdf
 
-PDF = Path(r"C:\Users\CARL\Downloads\OceanofPDF.pdf")
+PDF = Path(r"C:\Users\CARL\Downloads\Documents\933049067-The-Min-Max-Program-4X.pdf")
 OUT = Path(__file__).resolve().parents[1] / "data" / "minmax.json"
 
 COLUMNS = [
@@ -100,9 +100,9 @@ def main():
     weeks = []
     demos = {}
     current = None
-    day_order = ["Upper", "Lower", "Upper", "Lower", "Arms + Delts"]
+    day_order = ["Full Body", "Upper", "Lower", "Arms/Delts"]
     day_index = 0
-    for page_number in range(24, 84):
+    for page_number in range(24, 72):
         page = doc[page_number]
         week_words = [
             word[4]
@@ -120,9 +120,11 @@ def main():
         left = [word[4] for word in page.get_text("words") if word[0] < 150 and 300 < word[1] < 1000]
         label = " ".join(left)
         if label.startswith("Arms"):
-            name = "Arms + Delts"
+            name = "Arms/Delts"
+        elif label.startswith("Full"):
+            name = "Full Body"
         else:
-            name = day_order[day_index] if day_index < 5 else label
+            name = day_order[day_index] if day_index < 4 else label
         day_index += 1
         exercises = []
         for row in parse_page(page):

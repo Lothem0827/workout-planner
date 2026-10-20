@@ -17,6 +17,7 @@ import {
   newWeek,
   sessionFromSlot,
   uid,
+  weekHasNoWork,
 } from "./logic";
 import type {
   LibraryExercise,
@@ -369,8 +370,10 @@ export function GymProvider({ children }: { children: ReactNode }) {
     },
     async deleteSession(sessionId) {
       const current = await loadAll();
+      const session = current.sessions.find((item) => item.id === sessionId);
       await db.sessions.delete(sessionId);
       const storedWeeks = await db.weeks.toArray();
+      const restored: WeekPlan[] = [];
       for (const week of storedWeeks) {
         if (!week.slots.some((slot) => slot.sessionId === sessionId)) continue;
         const weekNext: WeekPlan = {
@@ -382,8 +385,34 @@ export function GymProvider({ children }: { children: ReactNode }) {
           ),
         };
         await db.weeks.put(weekNext);
+        restored.push(weekNext);
       }
-      const remaining = current.sessions.filter((session) => session.id !== sessionId);
+      const restoredWeek = restored.sort((a, b) => b.pass - a.pass)[0];
+      if (restoredWeek) {
+        const later = storedWeeks.filter(
+          (week) => week.programId === restoredWeek.programId && week.pass > restoredWeek.pass,
+        );
+        if (later.length && later.every(weekHasNoWork)) {
+          await db.weeks.bulkDelete(later.map((week) => week.id));
+          const program = current.programs.find((item) => item.id === restoredWeek.programId);
+          if (
+            program &&
+            session?.weekIndex != null &&
+            (program.weekIndex ?? 0) > session.weekIndex
+          ) {
+            const outline = program.weeks?.length
+              ? program.weeks
+              : [{ week: program.weekIndex ?? 1, days: program.days }];
+            const match = outline.find((item) => item.week === session.weekIndex);
+            await db.programs.put({
+              ...program,
+              weekIndex: session.weekIndex,
+              days: match?.days ?? program.days,
+            });
+          }
+        }
+      }
+      const remaining = current.sessions.filter((item) => item.id !== sessionId);
       applyPrs(remaining);
       await db.sessions.bulkPut(remaining);
       await refresh();

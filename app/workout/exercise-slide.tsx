@@ -100,6 +100,7 @@ export function ExerciseSlide({
   onLoggedSet,
   skipRest,
   onSkipRest,
+  preview = false,
 }: {
   exercise: SessionExercise;
   sessions: Session[];
@@ -115,6 +116,7 @@ export function ExerciseSlide({
   onLoggedSet: (durationMs: number) => void;
   skipRest: boolean;
   onSkipRest: (skip: boolean) => void;
+  preview?: boolean;
 }) {
   const lib = map.get(exercise.exerciseId);
   const name = lib?.name ?? "Exercise";
@@ -208,26 +210,37 @@ export function ExerciseSlide({
           <h2 className="min-w-0 flex-1 text-xl font-semibold leading-tight">
             {name}
           </h2>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-8 shrink-0 px-2.5"
-            onClick={() => setRestOpen(true)}
-          >
-            <ClockIcon />
-            <span className="font-medium tabular-nums">
-              {exercise.rest?.trim() || "1:30"}
+          {preview ? (
+            <span className="flex h-8 shrink-0 items-center gap-1.5 px-2.5 text-sm text-muted-foreground">
+              <ClockIcon className="size-4" />
+              <span className="font-medium tabular-nums">
+                {exercise.rest?.trim() || "1:30"}
+              </span>
             </span>
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            aria-label={alternatives.length ? "Substitutions" : "Swap"}
-            onClick={onOpenAlternatives}
-          >
-            <ArrowLeftRightIcon />
-          </Button>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-8 shrink-0 px-2.5"
+              onClick={() => setRestOpen(true)}
+            >
+              <ClockIcon />
+              <span className="font-medium tabular-nums">
+                {exercise.rest?.trim() || "1:30"}
+              </span>
+            </Button>
+          )}
+          {preview ? null : (
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label={alternatives.length ? "Substitutions" : "Swap"}
+              onClick={onOpenAlternatives}
+            >
+              <ArrowLeftRightIcon />
+            </Button>
+          )}
         </div>
         {exercise.notes ? (
           <p className="text-sm text-foreground">{exercise.notes}</p>
@@ -389,8 +402,10 @@ export function ExerciseSlide({
                     placeholder={prior ? formatWeight(prior.weight, unit) : undefined}
                     kg={set.weight}
                     unit={unit}
+                    readOnly={preview}
                     onFocus={() => setFocusedSetId(set.id)}
                     onWeight={(weight) => {
+                      if (preview) return;
                       setFocusedSetId(set.id);
                       onPatch((item) => ({
                         ...item,
@@ -407,8 +422,10 @@ export function ExerciseSlide({
                   aria-label={`Set ${setIndex + 1} reps`}
                   placeholder={prior ? String(prior.reps) : undefined}
                   value={set.reps ?? ""}
+                  readOnly={preview}
                   onFocus={() => setFocusedSetId(set.id)}
                   onChange={(event) => {
+                    if (preview) return;
                     setFocusedSetId(set.id);
                     const reps =
                       event.target.value === ""
@@ -423,78 +440,84 @@ export function ExerciseSlide({
                   }}
                   className={valueClass}
                 />
-                <button
-                  type="button"
-                  className={cn(
-                    "justify-self-end",
-                    set.done ? "text-recovery-fresh" : "text-muted-foreground",
-                  )}
-                  aria-label={set.done ? "Completed set" : "Complete set"}
-                  onClick={() => {
-                    const done = !set.done;
-                    onPatch((item) => ({
-                      ...item,
-                      sets: item.sets.map((row) =>
-                        row.id === set.id ? { ...row, done } : row,
-                      ),
-                    }));
-                    if (done) onLoggedSet(set.restMs ?? fallbackRestMs);
-                  }}
-                >
-                  <CheckIcon className="size-5" />
-                </button>
+                {preview ? (
+                  <span />
+                ) : (
+                  <button
+                    type="button"
+                    className={cn(
+                      "justify-self-end",
+                      set.done ? "text-recovery-fresh" : "text-muted-foreground",
+                    )}
+                    aria-label={set.done ? "Completed set" : "Complete set"}
+                    onClick={() => {
+                      const done = !set.done;
+                      onPatch((item) => ({
+                        ...item,
+                        sets: item.sets.map((row) =>
+                          row.id === set.id ? { ...row, done } : row,
+                        ),
+                      }));
+                      if (done) onLoggedSet(set.restMs ?? fallbackRestMs);
+                    }}
+                  >
+                    <CheckIcon className="size-5" />
+                  </button>
+                )}
               </div>
             );
           })}
         </div>
-        <div className="grid grid-cols-[4.75rem_1fr_1fr_4.5rem] items-center text-muted-foreground">
-          <button
-            type="button"
-            aria-label="Add set"
-            className="flex justify-center"
-            onClick={() => {
-              const last = exercise.sets.at(-1);
-              onPatch((item) => ({
-                ...item,
-                sets: [
-                  ...item.sets,
-                  {
-                    id: uid(),
-                    weight: suggestion?.weight ?? last?.weight ?? null,
-                    reps: last?.reps ?? null,
-                    done: false,
-                  },
-                ],
-              }));
-            }}
-          >
-            <PlusIcon className="size-5" />
-          </button>
-          <span className="text-center text-2xl opacity-40">
-            {formatWeight(
-              suggestion?.weight ?? exercise.sets.at(-1)?.weight ?? null,
-              unit,
-            )}
-          </span>
-          <span className="text-center text-2xl opacity-40">
-            {exercise.sets.at(-1)?.reps ?? ""}
-          </span>
-          <button
-            type="button"
-            className="justify-self-end text-sm disabled:opacity-40"
-            disabled={
-              exercise.sets.length <= exercise.setsTarget ||
-              Boolean(exercise.sets.at(-1)?.done)
-            }
-            onClick={() => {
-              onPatch((item) => ({ ...item, sets: item.sets.slice(0, -1) }));
-            }}
-          >
-            Delete
-          </button>
-        </div>
+        {preview ? null : (
+          <div className="grid grid-cols-[4.75rem_1fr_1fr_4.5rem] items-center text-muted-foreground">
+            <button
+              type="button"
+              aria-label="Add set"
+              className="flex justify-center"
+              onClick={() => {
+                const last = exercise.sets.at(-1);
+                onPatch((item) => ({
+                  ...item,
+                  sets: [
+                    ...item.sets,
+                    {
+                      id: uid(),
+                      weight: suggestion?.weight ?? last?.weight ?? null,
+                      reps: last?.reps ?? null,
+                      done: false,
+                    },
+                  ],
+                }));
+              }}
+            >
+              <PlusIcon className="size-5" />
+            </button>
+            <span className="text-center text-2xl opacity-40">
+              {formatWeight(
+                suggestion?.weight ?? exercise.sets.at(-1)?.weight ?? null,
+                unit,
+              )}
+            </span>
+            <span className="text-center text-2xl opacity-40">
+              {exercise.sets.at(-1)?.reps ?? ""}
+            </span>
+            <button
+              type="button"
+              className="justify-self-end text-sm disabled:opacity-40"
+              disabled={
+                exercise.sets.length <= exercise.setsTarget ||
+                Boolean(exercise.sets.at(-1)?.done)
+              }
+              onClick={() => {
+                onPatch((item) => ({ ...item, sets: item.sets.slice(0, -1) }));
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </div>
-      {restOpen ? (
+      {restOpen && !preview ? (
         <RestTimerSheet
           name={name}
           sets={exercise.sets}

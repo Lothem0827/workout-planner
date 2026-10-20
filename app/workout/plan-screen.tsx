@@ -1,6 +1,6 @@
 "use client";
 
-import { EllipsisVerticalIcon, SettingsIcon } from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { DayMuscle } from "@/components/day-muscle";
@@ -13,8 +13,7 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/u
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useGym } from "@/lib/gym";
-import { activeSessionForSlot, workingSetCount } from "@/lib/logic";
-import type { PlannedExercise, WeekSlot } from "@/lib/types";
+import type { WeekSlot } from "@/lib/types";
 
 export function PlanScreen({ planId }: { planId: string }) {
   const gym = useGym();
@@ -23,7 +22,6 @@ export function PlanScreen({ planId }: { planId: string }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [pending, setPending] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState<number | null>(null);
-  const [detail, setDetail] = useState<{ name: string; exercises: PlannedExercise[] } | null>(null);
   const selectRef = useRef(gym.selectProgram);
   selectRef.current = gym.selectProgram;
 
@@ -33,12 +31,6 @@ export function PlanScreen({ planId }: { planId: string }) {
   }, [gym.ready, gym.program?.id, planId]);
 
   const program = gym.programs.find((item) => item.id === planId) ?? null;
-
-  async function startDay(slotId: string) {
-    const existing = activeSessionForSlot(slotId, gym.sessions);
-    const id = existing?.id ?? (await gym.startSlot(slotId));
-    if (id) router.push(`/workout?session=${id}`);
-  }
 
   async function remove() {
     if (pending) return;
@@ -143,8 +135,6 @@ export function PlanScreen({ planId }: { planId: string }) {
       </StackHeader>
       <div className="flex flex-col gap-3 px-4 py-4">
         {days.map((day) => {
-          const inProgress = day.slot ? activeSessionForSlot(day.slot.id, gym.sessions) : null;
-          const canStart = day.slot?.status === "pending";
           const count = day.exercises.length;
           const primaries = day.exercises.flatMap((exercise) => {
             const muscle = gym.map.get(exercise.exerciseId)?.primary;
@@ -152,7 +142,11 @@ export function PlanScreen({ planId }: { planId: string }) {
           });
           return (
             <Card key={day.id}>
-              <div className="flex items-center gap-3 px-(--card-spacing)">
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-(--card-spacing) text-left"
+                onClick={() => router.push(`/workout?plan=${planId}&preview=${day.id}`)}
+              >
                 <DayMuscle primaries={primaries} />
                 <div className="min-w-0 flex-1">
                   <CardTitle>{day.name}</CardTitle>
@@ -160,44 +154,12 @@ export function PlanScreen({ planId }: { planId: string }) {
                     {count} {count === 1 ? "exercise" : "exercises"}
                   </p>
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  {canStart ? (
-                    <Button type="button" size="sm" onClick={() => void startDay(day.slot!.id)}>
-                      {inProgress ? "Resume" : "Start"}
-                    </Button>
-                  ) : day.slot?.status === "done" ? (
-                    <Badge variant="success">Done</Badge>
-                  ) : null}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`${day.name} exercises`}
-                    onClick={() => setDetail({ name: day.name, exercises: day.exercises })}
-                  >
-                    <EllipsisVerticalIcon />
-                  </Button>
-                </div>
-              </div>
+                {day.slot?.status === "done" ? <Badge variant="success">Done</Badge> : null}
+              </button>
             </Card>
           );
         })}
       </div>
-      <Drawer open={detail != null} onOpenChange={(open) => { if (!open) setDetail(null); }}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>{detail?.name ?? "Exercises"}</DrawerTitle>
-          </DrawerHeader>
-          <ul className="flex max-h-[70dvh] flex-col gap-3 overflow-auto p-4">
-            {detail?.exercises.map((exercise) => (
-              <li key={exercise.id} className="flex items-baseline justify-between gap-3">
-                <span>{exerciseName(exercise, gym.map)}</span>
-                <span className="shrink-0 text-sm text-muted-foreground tabular-nums">{repLine(exercise)}</span>
-              </li>
-            ))}
-          </ul>
-        </DrawerContent>
-      </Drawer>
       <Drawer open={settingsOpen} onOpenChange={setSettingsOpen}>
         <DrawerContent>
           <DrawerHeader>
@@ -327,17 +289,4 @@ function WeekScroller({ children }: { children: ReactNode }) {
       {children}
     </div>
   );
-}
-
-function exerciseName(exercise: PlannedExercise, map: Map<string, { name: string }>) {
-  return map.get(exercise.exerciseId)?.name ?? "Exercise";
-}
-
-function repLine(exercise: PlannedExercise) {
-  const sets = workingSetCount(exercise);
-  const reps = exercise.repRange?.trim()
-    || (exercise.repMin || exercise.repMax ? `${exercise.repMin}–${exercise.repMax}` : "");
-  if (sets > 0 && reps) return `${sets} × ${reps}`;
-  if (reps) return reps;
-  return sets > 0 ? `${sets} sets` : "";
 }

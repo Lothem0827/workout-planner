@@ -628,25 +628,41 @@ export function carryUnloggedExercises(
   }
 }
 
+export function weekHasNoWork(week: WeekPlan) {
+  return week.slots.every(
+    (slot) => slot.status === "dropped" || (slot.status === "pending" && !slot.sessionId),
+  );
+}
+
+export function sessionFromPlanned(
+  name: string,
+  planned: PlannedExercise[],
+  sessions: Session[],
+  map: Map<string, LibraryExercise>,
+  extras?: { slotId?: string; weekIndex?: number },
+): Session {
+  return {
+    id: uid(),
+    date: todayKey(),
+    name,
+    slotId: extras?.slotId,
+    weekIndex: extras?.weekIndex,
+    status: "active",
+    startedAt: Date.now(),
+    exercises: planned.map((item) => sessionExerciseFromPlanned(item, sessions, map)),
+  };
+}
+
 export function sessionFromSlot(
   slot: WeekSlot,
   sessions: Session[],
   map: Map<string, LibraryExercise>,
   weekIndex?: number,
 ): Session {
-  const exercises: SessionExercise[] = slot.exercises.map((planned) =>
-    sessionExerciseFromPlanned(planned, sessions, map),
-  );
-  return {
-    id: uid(),
-    date: todayKey(),
-    name: slot.name,
+  return sessionFromPlanned(slot.name, slot.exercises, sessions, map, {
     slotId: slot.id,
     weekIndex,
-    status: "active",
-    startedAt: Date.now(),
-    exercises,
-  };
+  });
 }
 
 export function volumeKg(session: Session) {

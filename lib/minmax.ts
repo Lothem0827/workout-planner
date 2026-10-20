@@ -218,6 +218,7 @@ export function minmaxProgram(byName: Map<string, LibraryExercise>): Program {
     id: uid(),
     name: "Min-Max",
     builtin: "minmax",
+    source: "minmax-4x",
     weekIndex: 1,
     weeks,
     days: weeks[0]?.days ?? [],

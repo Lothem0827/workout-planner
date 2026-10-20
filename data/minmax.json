@@ -1,43 +1,19 @@
 {
   "name": "Min-Max",
   "demos": {
+    "Lying Leg Curl": "https://youtu.be/y28L1m1PYUQ",
+    "Seated Leg Curl": "https://youtu.be/oWJBLChYZOQ",
+    "Nordic Ham Curl": "https://youtu.be/UbNb5Tsl46c",
+    "Squat (Your Choice)": "https://youtu.be/v3N4tpPpmyQ",
     "Barbell Incline Press": "https://youtu.be/ad0NL7TH2-I",
     "Smith Machine Incline Press": "https://youtu.be/q3agRhqt_WA",
     "DB Incline Press": "https://youtu.be/dhSKkQdUzoA",
-    "Pec Deck": "https://youtu.be/xei-JEpfAS4",
-    "DB Flye": "https://youtu.be/RnGCu_t0B3w",
-    "Cable Flye": "https://youtu.be/FzWZ0eKMgoM",
     "Incline DB Y-Raise": "https://youtu.be/xaOQJjzNrd8",
     "Cable Y-Raise": "https://youtu.be/xxnjF6ljHmg",
     "Machine Lateral Raise": "https://youtu.be/nc6pAci8Tpg",
     "Pull-Up (Wide Grip)": "https://youtu.be/oB27u_w3pX4",
     "Lat Pulldown (Wide Grip)": "https://youtu.be/nDl3VjkLPQE",
     "1-Arm Cable Pulldown": "https://youtu.be/01pnZt1uVFI",
-    "Kelso Shrug": "https://youtu.be/76rz0UNAlYI",
-    "Seated Cable Kelso Shrug": "https://youtu.be/qULwEAa7Lfo",
-    "Incline DB Kelso Shrug": "https://youtu.be/vYLLZHL9G0w",
-    "EZ-Bar Preacher Curl": "https://youtu.be/zX0KvQCLbac",
-    "Machine Preacher Curl": "https://youtu.be/CAOOYqfdAU4",
-    "DB Preacher Curl": "https://youtu.be/EWOxgi81xFA",
-    "Triceps Pressdown": "https://youtu.be/B5S2mbg0g5c",
-    "Close-Grip Bench Press": "https://youtu.be/XnYH1RfVRKk",
-    "Smith Machine JM Press": "https://youtu.be/WnhjBiezSa8",
-    "Dragon Flag": "https://youtu.be/p6VfK1YDhhQ",
-    "Bent-Knee Dragon Flag": "https://youtu.be/N7M5CR541Ak",
-    "Lying Leg Raise": "https://youtu.be/4WTBHsoAS1I",
-    "Lying Leg Curl": "https://youtu.be/y28L1m1PYUQ",
-    "Seated Leg Curl": "https://youtu.be/oWJBLChYZOQ",
-    "Nordic Ham Curl": "https://youtu.be/UbNb5Tsl46c",
-    "Squat (Your Choice)": "https://youtu.be/v3N4tpPpmyQ",
-    "Smith Machine Lunge": "https://youtu.be/FPIsTw-jh5s",
-    "DB Lunge": "https://youtu.be/9Pjs2YR2KcI",
-    "Barbell Lunge": "https://youtu.be/DHSuW_Wsx6M",
-    "Leg Extension": "https://youtu.be/G0_M9LBCT0o",
-    "Reverse Nordic": "https://youtu.be/aHS9tKzJXik",
-    "Sissy Squat": "https://youtu.be/Ma99aw-VDJQ",
-    "Machine Hip Abduction": "https://youtu.be/iGd7fQffkkM",
-    "Cable Hip Abduction": "https://youtu.be/uqF4qttYpN8",
-    "Standing Plate Abduction": "https://youtu.be/Y_qP7FEsn7A",
     "Standing Calf Raise": "https://youtu.be/WMkCGNwo5ts",
     "Leg Press Calf Press": "https://youtu.be/-mcxziH_KdM",
     "Donkey Calf Raise": "https://youtu.be/LC9SO-pIXqA",
@@ -60,6 +36,9 @@
     "Cable Crunch": "https://youtu.be/LvJM9V3D_CQ",
     "Weighted Crunch": "https://youtu.be/Q_n8cSQLhog",
     "Machine Crunch": "https://youtu.be/KlxdhDSi5Dc",
+    "Leg Extension": "https://youtu.be/G0_M9LBCT0o",
+    "Reverse Nordic": "https://youtu.be/aHS9tKzJXik",
+    "Sissy Squat": "https://youtu.be/Ma99aw-VDJQ",
     "Barbell RDL": "https://youtu.be/xbnan2iNh-Q",
     "DB RDL": "https://youtu.be/CaryZp20CuI",
     "Seated Cable Deadlift": "https://youtu.be/FCe6PIQbB-s",
@@ -96,126 +75,8 @@
       "week": 1,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "2",
-              "rirSet2": "1",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "2",
-              "rirSet2": "1",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "2",
-              "rirSet2": "1",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -246,55 +107,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "2",
+              "rirSet2": "1",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "N/A",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
+              "rirSet1": "2",
+              "rirSet2": "1",
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
-              "name": "Machine Hip Abduction",
+              "name": "Standing Calf Raise",
               "technique": "N/A",
               "warmupSets": "0-1",
               "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
               "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
-            },
-            {
-              "name": "Standing Calf Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -305,7 +166,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -409,7 +270,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -484,7 +345,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -621,126 +482,8 @@
       "week": 2,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -771,55 +514,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "1",
+              "rirSet2": "0",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "N/A",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
+              "rirSet1": "1",
               "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
-            },
-            {
-              "name": "Machine Hip Abduction",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "1",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
               "name": "Standing Calf Raise",
               "technique": "N/A",
               "warmupSets": "0-1",
-              "workingSets": "2",
+              "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
-              "rirSet2": "0",
+              "rirSet2": "N/A",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -830,7 +573,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -934,7 +677,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -1009,7 +752,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -1146,126 +889,8 @@
       "week": 3,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -1296,55 +921,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "1",
+              "rirSet2": "0",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "N/A",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
+              "rirSet1": "1",
               "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
-            },
-            {
-              "name": "Machine Hip Abduction",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "1",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
               "name": "Standing Calf Raise",
               "technique": "N/A",
               "warmupSets": "0-1",
-              "workingSets": "2",
+              "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
-              "rirSet2": "0",
+              "rirSet2": "N/A",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -1355,7 +980,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -1459,7 +1084,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -1534,7 +1159,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -1671,126 +1296,8 @@
       "week": 4,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -1821,55 +1328,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "1",
+              "rirSet2": "0",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "N/A",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
+              "rirSet1": "1",
               "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
-            },
-            {
-              "name": "Machine Hip Abduction",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "1",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
               "name": "Standing Calf Raise",
               "technique": "N/A",
               "warmupSets": "0-1",
-              "workingSets": "2",
+              "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
-              "rirSet2": "0",
+              "rirSet2": "N/A",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -1880,7 +1387,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -1984,7 +1491,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -2059,7 +1566,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -2196,126 +1703,8 @@
       "week": 5,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -2346,55 +1735,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "1",
+              "rirSet2": "0",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "N/A",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
+              "rirSet1": "1",
               "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
-            },
-            {
-              "name": "Machine Hip Abduction",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "1",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
               "name": "Standing Calf Raise",
               "technique": "N/A",
               "warmupSets": "0-1",
-              "workingSets": "2",
+              "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
-              "rirSet2": "0",
+              "rirSet2": "N/A",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -2405,7 +1794,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -2509,7 +1898,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -2584,7 +1973,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -2721,126 +2110,8 @@
       "week": 6,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -2871,55 +2142,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "1",
+              "rirSet2": "0",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "N/A",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
+              "rirSet1": "1",
               "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
-            },
-            {
-              "name": "Machine Hip Abduction",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "1",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
               "name": "Standing Calf Raise",
               "technique": "N/A",
               "warmupSets": "0-1",
-              "workingSets": "2",
+              "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
-              "rirSet2": "0",
+              "rirSet2": "N/A",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -2930,7 +2201,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -3034,7 +2305,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -3109,7 +2380,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -3246,126 +2517,8 @@
       "week": 7,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "2",
-              "rirSet2": "1",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "2",
-              "rirSet2": "1",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "2",
-              "rirSet2": "1",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -3396,55 +2549,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "2",
+              "rirSet2": "1",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "N/A",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
+              "rirSet1": "2",
+              "rirSet2": "1",
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
-              "name": "Machine Hip Abduction",
+              "name": "Standing Calf Raise",
               "technique": "N/A",
               "warmupSets": "0-1",
               "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
               "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
-            },
-            {
-              "name": "Standing Calf Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -3455,7 +2608,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -3559,7 +2712,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -3634,7 +2787,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -3771,126 +2924,8 @@
       "week": 8,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "Two Drop Sets (~25% per)",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "Lengthened Partials (Extend Set)",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "Myo-reps",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "Myo-reps",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -3921,55 +2956,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "1",
+              "rirSet2": "0",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "Lengthened Partials (Extend Set)",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
+              "rirSet1": "1",
               "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
-            },
-            {
-              "name": "Machine Hip Abduction",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "1",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
               "name": "Standing Calf Raise",
               "technique": "Lengthened Partials (Extend Set)",
               "warmupSets": "0-1",
-              "workingSets": "2",
+              "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
-              "rirSet2": "0",
+              "rirSet2": "N/A",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -3980,7 +3015,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -4084,7 +3119,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -4159,7 +3194,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -4296,126 +3331,8 @@
       "week": 9,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "Two Drop Sets (~25% per)",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "Lengthened Partials (Extend Set)",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "Myo-reps",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "Myo-reps",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -4446,55 +3363,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "1",
+              "rirSet2": "0",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "Lengthened Partials (Extend Set)",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
+              "rirSet1": "1",
               "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
-            },
-            {
-              "name": "Machine Hip Abduction",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "1",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
               "name": "Standing Calf Raise",
               "technique": "Lengthened Partials (Extend Set)",
               "warmupSets": "0-1",
-              "workingSets": "2",
+              "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
-              "rirSet2": "0",
+              "rirSet2": "N/A",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -4505,7 +3422,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -4609,7 +3526,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -4684,7 +3601,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -4821,126 +3738,8 @@
       "week": 10,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "Two Drop Sets (~25% per)",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "Lengthened Partials (Extend Set)",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "Myo-reps",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "Myo-reps",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -4971,55 +3770,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "1",
+              "rirSet2": "0",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "Lengthened Partials (Extend Set)",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
+              "rirSet1": "1",
               "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
-            },
-            {
-              "name": "Machine Hip Abduction",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "1",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
               "name": "Standing Calf Raise",
               "technique": "Lengthened Partials (Extend Set)",
               "warmupSets": "0-1",
-              "workingSets": "2",
+              "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
-              "rirSet2": "0",
+              "rirSet2": "N/A",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -5030,7 +3829,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -5134,7 +3933,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -5209,7 +4008,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -5346,126 +4145,8 @@
       "week": 11,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "Two Drop Sets (~25% per)",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "Lengthened Partials (Extend Set)",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "Myo-reps",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "Myo-reps",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -5496,55 +4177,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "1",
+              "rirSet2": "0",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "Lengthened Partials (Extend Set)",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
+              "rirSet1": "1",
               "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
-            },
-            {
-              "name": "Machine Hip Abduction",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "1",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
               "name": "Standing Calf Raise",
               "technique": "Lengthened Partials (Extend Set)",
               "warmupSets": "0-1",
-              "workingSets": "2",
+              "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
-              "rirSet2": "0",
+              "rirSet2": "N/A",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -5555,7 +4236,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -5659,7 +4340,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -5734,7 +4415,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {
@@ -5871,126 +4552,8 @@
       "week": 12,
       "days": [
         {
-          "name": "Upper",
-          "label": "Upper 1",
-          "exercises": [
-            {
-              "name": "Barbell Incline Press",
-              "technique": "N/A",
-              "warmupSets": "2-4",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "3-5 min",
-              "substitution1": "Smith Machine Incline Press",
-              "substitution2": "DB Incline Press",
-              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
-            },
-            {
-              "name": "Pec Deck",
-              "technique": "Two Drop Sets (~25% per)",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "DB Flye",
-              "substitution2": "Cable Flye",
-              "notes": "Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
-              "videoUrl": "https://youtu.be/xei-JEpfAS4"
-            },
-            {
-              "name": "Incline DB Y-Raise",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "8-10",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Cable Y-Raise",
-              "substitution2": "Machine Lateral Raise",
-              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
-              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
-            },
-            {
-              "name": "Pull-Up (Wide Grip)",
-              "technique": "Lengthened Partials (Extend Set)",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Lat Pulldown (Wide Grip)",
-              "substitution2": "1-Arm Cable Pulldown",
-              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
-              "videoUrl": "https://youtu.be/oB27u_w3pX4"
-            },
-            {
-              "name": "Kelso Shrug",
-              "technique": "N/A",
-              "warmupSets": "1-2",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "1",
-              "rirSet2": "0",
-              "rest": "2-3 min",
-              "substitution1": "Seated Cable Kelso Shrug",
-              "substitution2": "Incline DB Kelso Shrug",
-              "notes": "Pause for about 1 second at the top and then allow your shoulder blades to peel apart on the way back down, under control.",
-              "videoUrl": "https://youtu.be/76rz0UNAlYI"
-            },
-            {
-              "name": "EZ-Bar Preacher Curl",
-              "technique": "Myo-reps",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Machine Preacher Curl",
-              "substitution2": "DB Preacher Curl",
-              "notes": "Keep your triceps firmly pinned against the pad as you curl. Smooth controlled reps.",
-              "videoUrl": "https://youtu.be/zX0KvQCLbac"
-            },
-            {
-              "name": "Triceps Pressdown",
-              "technique": "Myo-reps",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Close-Grip Bench Press",
-              "substitution2": "Smith Machine JM Press",
-              "notes": "You can use a rope or bar attachment for these, whichever you find more comfortable.",
-              "videoUrl": "https://youtu.be/B5S2mbg0g5c"
-            },
-            {
-              "name": "Dragon Flag",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "2",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Bent-Knee Dragon Flag",
-              "substitution2": "Lying Leg Raise",
-              "notes": "Keep your body as rigid as possible throughout the ROM.",
-              "videoUrl": "https://youtu.be/p6VfK1YDhhQ"
-            }
-          ]
-        },
-        {
-          "name": "Lower",
-          "label": "Lower 1",
+          "name": "Full Body",
+          "label": "Full Body",
           "exercises": [
             {
               "name": "Lying Leg Curl",
@@ -6021,55 +4584,55 @@
               "videoUrl": "https://youtu.be/v3N4tpPpmyQ"
             },
             {
-              "name": "Smith Machine Lunge",
+              "name": "Barbell Incline Press",
               "technique": "N/A",
               "warmupSets": "2-4",
-              "workingSets": "1",
+              "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "2-4 min",
-              "substitution1": "DB Lunge",
-              "substitution2": "Barbell Lunge",
-              "notes": "Minimize contribution from your back leg!",
-              "videoUrl": "https://youtu.be/FPIsTw-jh5s"
+              "rirSet1": "1",
+              "rirSet2": "0",
+              "rest": "3-5 min",
+              "substitution1": "Smith Machine Incline Press",
+              "substitution2": "DB Incline Press",
+              "notes": "A 30\u00b0 or 45\u00b0 bench will work here. Pause for 1 second at the bottom of each rep while maintaining tension on the pecs.",
+              "videoUrl": "https://youtu.be/ad0NL7TH2-I"
             },
             {
-              "name": "Leg Extension",
+              "name": "Incline DB Y-Raise",
+              "technique": "N/A",
+              "warmupSets": "0-1",
+              "workingSets": "1",
+              "repRange": "8-10",
+              "rirSet1": "0",
+              "rirSet2": "N/A",
+              "rest": "1-2 min",
+              "substitution1": "Cable Y-Raise",
+              "substitution2": "Machine Lateral Raise",
+              "notes": "Use a 30\u00b0 incline bench (back against the bench) and lift the weight up and out in a Y shape.",
+              "videoUrl": "https://youtu.be/xaOQJjzNrd8"
+            },
+            {
+              "name": "Pull-Up (Wide Grip)",
               "technique": "Lengthened Partials (Extend Set)",
               "warmupSets": "1-2",
               "workingSets": "2",
               "repRange": "6-8",
-              "rirSet1": "0",
+              "rirSet1": "1",
               "rirSet2": "0",
-              "rest": "1-2 min",
-              "substitution1": "Reverse Nordic",
-              "substitution2": "Sissy Squat",
-              "notes": "Set the seat back as far as it will go while still feeling comfortable. Grab the handles as hard as you can to pull your butt down into the seat (using straps can help here).",
-              "videoUrl": "https://youtu.be/G0_M9LBCT0o"
-            },
-            {
-              "name": "Machine Hip Abduction",
-              "technique": "N/A",
-              "warmupSets": "0-1",
-              "workingSets": "1",
-              "repRange": "6-8",
-              "rirSet1": "0",
-              "rirSet2": "N/A",
-              "rest": "1-2 min",
-              "substitution1": "Cable Hip Abduction",
-              "substitution2": "Standing Plate Abduction",
-              "notes": "If possible, place foam pads in between the outside of your knees and the pads on the machine. This will increase your range of motion on the machine.",
-              "videoUrl": "https://youtu.be/iGd7fQffkkM"
+              "rest": "2-3 min",
+              "substitution1": "Lat Pulldown (Wide Grip)",
+              "substitution2": "1-Arm Cable Pulldown",
+              "notes": "Control the negative and feel your lats pulling apart. Full ROM!",
+              "videoUrl": "https://youtu.be/oB27u_w3pX4"
             },
             {
               "name": "Standing Calf Raise",
               "technique": "Lengthened Partials (Extend Set)",
               "warmupSets": "0-1",
-              "workingSets": "2",
+              "workingSets": "1",
               "repRange": "6-8",
               "rirSet1": "0",
-              "rirSet2": "0",
+              "rirSet2": "N/A",
               "rest": "1-2 min",
               "substitution1": "Leg Press Calf Press",
               "substitution2": "Donkey Calf Raise",
@@ -6080,7 +4643,7 @@
         },
         {
           "name": "Upper",
-          "label": "Upper 2",
+          "label": "Upper",
           "exercises": [
             {
               "name": "Close-Grip Lat Pulldown",
@@ -6184,7 +4747,7 @@
         },
         {
           "name": "Lower",
-          "label": "Lower 2",
+          "label": "Lower",
           "exercises": [
             {
               "name": "Leg Extension",
@@ -6259,7 +4822,7 @@
           ]
         },
         {
-          "name": "Arms + Delts",
+          "name": "Arms/Delts",
           "label": "Arms/Delts",
           "exercises": [
             {

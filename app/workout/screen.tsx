@@ -24,11 +24,13 @@ import { ExerciseSlide, SubstitutionSheet, substitutionChoices } from "./exercis
 import { RestOverlay, formatClock } from "./rest-overlay";
 import { WorkoutSummary } from "./summary";
 import {
+  activeSessionForSlot,
   activeSessionForWeek,
   carryOptions,
   currentExerciseIndex,
   doneSetCount,
   exerciseDone,
+  sessionFromPlanned,
   unloggedExercises,
   restMs,
   suggestedWeightKg,
@@ -43,16 +45,64 @@ import {
   PATTERN_LABEL,
   PATTERNS,
   type LibraryExercise,
+  type PlannedExercise,
+  type Program,
   type Session,
   type SessionExercise,
+  type WeekPlan,
+  type WeekSlot,
 } from "@/lib/types";
 
 export function WorkoutScreen() {
   const params = useSearchParams();
   const planId = params.get("plan");
   const sessionId = params.get("session");
-  if (planId && !sessionId) return <PlanScreen planId={planId} />;
+  const previewId = params.get("preview");
+  if (planId && !sessionId && !previewId) return <PlanScreen planId={planId} />;
   return <SessionScreen />;
+}
+
+function previewSourceFor(
+  planId: string | null,
+  previewId: string | null,
+  gym: {
+    programs: Program[];
+    program: Program | null;
+    week: WeekPlan | null;
+  },
+) {
+  if (!previewId) return null;
+  const program = gym.programs.find((item) => item.id === planId) ?? gym.program;
+  if (!program) return null;
+  const live = gym.program?.id === program.id ? gym.week : null;
+  if (live) {
+    const slot = live.slots.find((item) => item.id === previewId && item.status !== "dropped");
+    if (slot) {
+      return {
+        name: slot.name,
+        exercises: slot.exercises as PlannedExercise[],
+        slot,
+        weekIndex: program.weekIndex,
+        planId: program.id,
+      };
+    }
+  }
+  const outline = program.weeks?.length
+    ? program.weeks
+    : [{ week: program.weekIndex ?? 1, days: program.days }];
+  for (const week of outline) {
+    const day = week.days.find((item) => item.id === previewId);
+    if (day) {
+      return {
+        name: day.name,
+        exercises: day.exercises,
+        slot: null as WeekSlot | null,
+        weekIndex: week.week,
+        planId: program.id,
+      };
+    }
+  }
+  return null;
 }
 
 function restCaptionFor(
@@ -75,11 +125,33 @@ function SessionScreen() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session");
+  const planId = searchParams.get("plan");
+  const previewId = searchParams.get("preview");
   const finishRequested = searchParams.get("finish") === "1";
+  const isPreview = Boolean(previewId) && !sessionId;
+  const previewSource = useMemo(
+    () => (isPreview ? previewSourceFor(planId, previewId, gym) : null),
+    [isPreview, planId, previewId, gym.programs, gym.program, gym.week],
+  );
+  const previewSession = useMemo(() => {
+    if (!previewSource) return null;
+    return sessionFromPlanned(
+      previewSource.name,
+      previewSource.exercises,
+      gym.sessions,
+      gym.map,
+      {
+        slotId: previewSource.slot?.id,
+        weekIndex: previewSource.weekIndex,
+      },
+    );
+  }, [previewId, gym.ready, previewSource]);
   const requested = sessionId
     ? gym.sessions.find((session) => session.id === sessionId && session.status === "active")
     : null;
-  const active = requested ?? activeSessionForWeek(gym.week, gym.sessions);
+  const active = isPreview
+    ? previewSession
+    : requested ?? activeSessionForWeek(gym.week, gym.sessions);
   const [now, setNow] = useState(Date.now());
   const [restUntil, setRestUntil] = useState<number | null>(null);
   const [restOpen, setRestOpen] = useState(true);
@@ -93,8 +165,11 @@ function SessionScreen() {
   const [summaryId, setSummaryId] = useState<string | null>(null);
   const [carryOpen, setCarryOpen] = useState(false);
   const [carrySlotId, setCarrySlotId] = useState<string | null>(null);
+  const [discardOpen, setDiscardOpen] = useState(false);
   const finishingRef = useRef(false);
   const promptedRef = useRef(false);
+  const selectRef = useRef(gym.selectProgram);
+  selectRef.current = gym.selectProgram;
   const sessionRef = useRef<Session | null>(null);
   const pendingWrites = useRef(0);
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -117,15 +192,20 @@ function SessionScreen() {
   }, [restLeft]);
 
   useEffect(() => {
+    if (!isPreview || !planId || !gym.ready || gym.program?.id === planId) return;
+    void selectRef.current(planId);
+  }, [isPreview, planId, gym.ready, gym.program?.id]);
+
+  useEffect(() => {
     if (!gym.ready || !active || openedRef.current === active.id) return;
     const el = scrollerRef.current;
     if (!el) return;
     openedRef.current = active.id;
-    const target = currentExerciseIndex(active);
+    const target = isPreview ? 0 : currentExerciseIndex(active);
     if (target <= 0) return;
     indexRef.current = target;
     el.scrollLeft = target * el.clientWidth;
-  }, [gym.ready, active]);
+  }, [gym.ready, active, isPreview]);
 
   async function finishWith(id: string, carryToSlotId?: string) {
     if (finishingRef.current) return;
@@ -152,12 +232,13 @@ function SessionScreen() {
   }
 
   useEffect(() => {
-    if (!finishRequested || !requested || finishingRef.current || promptedRef.current) return;
+    if (isPreview || !finishRequested || !requested || finishingRef.current || promptedRef.current) return;
     promptedRef.current = true;
     requestFinish(requested);
   });
 
   useEffect(() => {
+    if (isPreview) return;
     let lock: WakeLockSentinel | null = null;
     navigator.wakeLock
       ?.request("screen")
@@ -168,9 +249,14 @@ function SessionScreen() {
     return () => {
       void lock?.release();
     };
-  }, []);
+  }, [isPreview]);
 
-  if (!gym.ready || (finishRequested && requested && !summaryId && !carryOpen)) {
+  const planMissing = Boolean(planId && gym.ready && !gym.programs.some((item) => item.id === planId));
+  const waitingForPlan = Boolean(
+    isPreview && planId && !planMissing && gym.program?.id !== planId,
+  );
+
+  if (!gym.ready || waitingForPlan || (finishRequested && requested && !summaryId && !carryOpen)) {
     return (
       <main className="min-h-dvh bg-background">
         <StackHeader title="Workout" fallback="/" />
@@ -200,7 +286,26 @@ function SessionScreen() {
         map={gym.map}
         unit={gym.settings.unit}
         onDone={() => router.push("/")}
+        onDiscard={async () => {
+          await gym.deleteSession(finished.id);
+          router.push("/");
+        }}
       />
+    );
+  }
+  if (isPreview && !previewSource) {
+    return (
+      <main className="min-h-dvh bg-background">
+        <StackHeader title="Workout" fallback={planId ? `/workout?plan=${planId}` : "/train"} />
+        <div className="px-4 py-4">
+          <Empty>
+            <EmptyHeader>
+              <EmptyTitle>Workout not found</EmptyTitle>
+              <EmptyDescription>This day is no longer on the plan.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </div>
+      </main>
     );
   }
   if (!active) {
@@ -223,9 +328,10 @@ function SessionScreen() {
   if (pendingWrites.current === 0) sessionRef.current = session;
   const seconds = Math.max(0, Math.floor((now - session.startedAt) / 1000));
   const clock = `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
-  const restVisible = restLeft > 0 && restOpen;
+  const restVisible = restLeft > 0 && restOpen && !isPreview;
 
   function update(next: Session) {
+    if (isPreview) return Promise.resolve();
     sessionRef.current = next;
     pendingWrites.current += 1;
     return gym.saveSession(next).finally(() => {
@@ -366,11 +472,32 @@ function SessionScreen() {
   }
 
   const readyToFinish = Boolean(current && currentDone && isLast);
+  const previewSlot = previewSource?.slot ?? null;
+  const previewInProgress = previewSlot
+    ? activeSessionForSlot(previewSlot.id, gym.sessions)
+    : null;
+  const canStartPreview = previewSlot?.status === "pending";
+  const startLabel = previewInProgress ? "Resume" : "Start";
+  const loggedSets = doneSetCount(session);
+
+  async function startPreview() {
+    if (!previewSlot || previewSlot.status !== "pending") return;
+    const existing = activeSessionForSlot(previewSlot.id, gym.sessions);
+    const id = existing?.id ?? (await gym.startSlot(previewSlot.id));
+    if (id) router.replace(`/workout?session=${id}`);
+  }
+
+  async function discardWorkout() {
+    if (isPreview) return;
+    setDiscardOpen(false);
+    await gym.deleteSession(session.id);
+    router.push("/");
+  }
 
   return (
     <>
     <main
-      inert={restVisible ? true : undefined}
+      inert={restVisible && !isPreview ? true : undefined}
       className="-mb-[env(safe-area-inset-bottom)] flex h-dvh flex-col overflow-hidden bg-background"
     >
       <StackHeader
@@ -382,19 +509,47 @@ function SessionScreen() {
             ) : null}
           </>
         }
-        fallback="/"
-        detail={`${clock} · ${formatLoad(volumeKg(session), gym.settings.unit)} · ${doneSetCount(session)} sets`}
+        fallback={isPreview && previewSource ? `/workout?plan=${previewSource.planId}` : "/"}
+        detail={
+          isPreview
+            ? `${session.exercises.length} ${session.exercises.length === 1 ? "exercise" : "exercises"}`
+            : `${clock} · ${formatLoad(volumeKg(session), gym.settings.unit)} · ${loggedSets} sets`
+        }
       >
-        <Button
-          type="button"
-          variant={isLast ? "default" : "secondary"}
-          className="mr-2 shrink-0"
-          onClick={() => {
-            requestFinish(session);
-          }}
-        >
-          Finish
-        </Button>
+        {isPreview ? (
+          canStartPreview ? (
+            <Button
+              type="button"
+              className="mr-2 shrink-0"
+              onClick={() => {
+                void startPreview();
+              }}
+            >
+              {startLabel}
+            </Button>
+          ) : null
+        ) : (
+          <>
+            <Button
+              type="button"
+              variant="ghost"
+              className="shrink-0 text-destructive"
+              onClick={() => setDiscardOpen(true)}
+            >
+              Discard
+            </Button>
+            <Button
+              type="button"
+              variant={isLast ? "default" : "secondary"}
+              className="mr-2 shrink-0"
+              onClick={() => {
+                requestFinish(session);
+              }}
+            >
+              Finish
+            </Button>
+          </>
+        )}
       </StackHeader>
       <div
         ref={scrollerRef}
@@ -417,21 +572,28 @@ function SessionScreen() {
             segments={segments}
             activeIndex={safeIndex}
             onJump={goTo}
-            onOpenAlternatives={() => openAlternatives(exercise)}
+            onOpenAlternatives={() => {
+              if (!isPreview) openAlternatives(exercise);
+            }}
             onPatch={(patch) => {
+              if (isPreview) return;
               void update(patchExercise(exercise.id, patch));
             }}
-            onLoggedSet={(durationMs) => startRest(durationMs)}
+            onLoggedSet={(durationMs) => {
+              if (!isPreview) startRest(durationMs);
+            }}
             skipRest={Boolean(session.skipRest)}
             onSkipRest={(skip) => {
+              if (isPreview) return;
               const current = sessionRef.current ?? session;
               void update({ ...current, skipRest: skip || undefined });
             }}
+            preview={isPreview}
           />
         ))}
       </div>
       <div className="shrink-0 bg-background px-4 pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
-        {restLeft > 0 && !restOpen ? (
+        {restLeft > 0 && !restOpen && !isPreview ? (
           <button
             type="button"
             className="mb-2 flex h-11 w-full items-center justify-between gap-3 rounded-lg border bg-muted/40 px-3 text-left"
@@ -442,20 +604,34 @@ function SessionScreen() {
             <span className="shrink-0 text-base font-semibold tabular-nums">{formatClock(restLeft)}</span>
           </button>
         ) : null}
-        <Button
-          type="button"
-          className="h-12 w-full text-base"
-          disabled={!current}
-          onClick={() => {
-            if (readyToFinish) {
-              requestFinish(session);
-              return;
-            }
-            logOrNext();
-          }}
-        >
-          {readyToFinish ? "Finish" : currentDone && !isLast ? "Next" : "Log Set"}
-        </Button>
+        {isPreview ? (
+          canStartPreview ? (
+            <Button
+              type="button"
+              className="h-12 w-full text-base"
+              onClick={() => {
+                void startPreview();
+              }}
+            >
+              {startLabel}
+            </Button>
+          ) : null
+        ) : (
+          <Button
+            type="button"
+            className="h-12 w-full text-base"
+            disabled={!current}
+            onClick={() => {
+              if (readyToFinish) {
+                requestFinish(session);
+                return;
+              }
+              logOrNext();
+            }}
+          >
+            {readyToFinish ? "Finish" : currentDone && !isLast ? "Next" : "Log Set"}
+          </Button>
+        )}
       </div>
       {subsExercise && subsChoices.length ? (
         <SubstitutionSheet
@@ -487,6 +663,39 @@ function SessionScreen() {
           }}
         />
       ) : null}
+      <Drawer
+        open={!isPreview && discardOpen}
+        onOpenChange={(open) => {
+          if (!open) setDiscardOpen(false);
+        }}
+        showSwipeHandle
+      >
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Discard workout</DrawerTitle>
+            <DrawerDescription>
+              {loggedSets > 0
+                ? `You logged ${loggedSets} ${loggedSets === 1 ? "set" : "sets"}. This cannot be undone. ${session.name} stays available to start again.`
+                : `${session.name} stays available to start again. This workout will not be saved.`}
+            </DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <Button
+              type="button"
+              variant="destructive"
+              className="w-full"
+              onClick={() => {
+                void discardWorkout();
+              }}
+            >
+              Discard
+            </Button>
+            <Button type="button" variant="outline" className="w-full" onClick={() => setDiscardOpen(false)}>
+              Cancel
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
       <Drawer
         open={carryOpen && carryDays.length > 0}
         onOpenChange={(open) => {
@@ -558,7 +767,7 @@ function SessionScreen() {
         </DrawerContent>
       </Drawer>
     </main>
-    {restVisible ? (
+    {restVisible && !isPreview ? (
       <RestOverlay
         secondsLeft={restLeft}
         caption={restCaption}

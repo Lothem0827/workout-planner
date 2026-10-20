@@ -81,6 +81,7 @@ export interface Program {
   weeks?: ProgramWeek[];
   weekIndex?: number;
   builtin?: "minmax" | "upper-lower";
+  source?: "minmax-4x";
 }
 
 export interface WeekSlot {

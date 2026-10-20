@@ -1,7 +1,7 @@
 import Dexie, { type Table } from "dexie";
 import catalog from "@/data/catalog.json";
 import { newWeek } from "./logic";
-import { ensureEssentialsExercises, essentialsProgram } from "./essentials";
+import { ensureEssentialsExercises } from "./essentials";
 import { ensureMinmaxExercises, minmaxProgram } from "./minmax";
 import type {
   LibraryExercise,
@@ -36,6 +36,10 @@ function isMinmax(program: Program) {
   return program.builtin === "minmax" || program.name === "Min-Max";
 }
 
+function isMinmax4x(program: Program) {
+  return program.source === "minmax-4x";
+}
+
 let seeding: Promise<void> | null = null;
 
 export function seedIfEmpty() {
@@ -65,13 +69,10 @@ async function seedPrograms() {
       await db.programs.put({ ...program, builtin: "minmax" });
       program.builtin = "minmax";
     }
-    if (program.name === "Upper/Lower" && program.builtin !== "upper-lower") {
-      await db.programs.put({ ...program, builtin: "upper-lower" });
-      program.builtin = "upper-lower";
-    }
   }
+  await removeUpperLowerBuiltins();
 
-  const minmax = await keepOneMinmax(settings.activeProgramId);
+  const minmax = await replaceMinmaxWith4x(await keepOneMinmax(settings.activeProgramId));
   const stored = await db.programs.toArray();
   let activeId = settings.activeProgramId;
   if (!activeId || !stored.some((item) => item.id === activeId)) {
@@ -120,9 +121,6 @@ async function createBuiltinPrograms() {
   const upperEnsured = ensureEssentialsExercises(afterMinmax);
   const upperRows = [...upperEnsured.created, ...upperEnsured.updated];
   if (upperRows.length) await db.exercises.bulkPut(upperRows);
-  const upper = essentialsProgram(upperEnsured.byName);
-  await db.programs.put(upper);
-  await db.weeks.put(newWeek(upper, 1));
 }
 
 async function syncBuiltinExercises() {
@@ -134,6 +132,55 @@ async function syncBuiltinExercises() {
   const upperEnsured = ensureEssentialsExercises(afterMinmax);
   const upperRows = [...upperEnsured.created, ...upperEnsured.updated];
   if (upperRows.length) await db.exercises.bulkPut(upperRows);
+}
+
+function isUpperLower(program: Program) {
+  return program.builtin === "upper-lower" || program.name === "Upper/Lower";
+}
+
+async function removeUpperLowerBuiltins() {
+  const copies = (await db.programs.toArray()).filter(isUpperLower);
+  if (copies.length === 0) return;
+  const weeks = await db.weeks.toArray();
+  const sessions = await db.sessions.toArray();
+  for (const program of copies) {
+    const rows = weeks.filter((week) => week.programId === program.id);
+    const slotIds = new Set(rows.flatMap((week) => week.slots.map((slot) => slot.id)));
+    const activeIds = sessions
+      .filter(
+        (session) =>
+          session.status === "active" && session.slotId != null && slotIds.has(session.slotId),
+      )
+      .map((session) => session.id);
+    if (activeIds.length) await db.sessions.bulkDelete(activeIds);
+    if (rows.length) await db.weeks.bulkDelete(rows.map((week) => week.id));
+    await db.programs.delete(program.id);
+  }
+}
+
+async function replaceMinmaxWith4x(existing: Program | null) {
+  if (!existing) return null;
+  if (isMinmax4x(existing)) return existing;
+
+  const exercises = await db.exercises.toArray();
+  const ensured = ensureMinmaxExercises(exercises);
+  const rows = [...ensured.created, ...ensured.updated];
+  if (rows.length) await db.exercises.bulkPut(rows);
+
+  const next: Program = { ...minmaxProgram(ensured.byName), id: existing.id, weekIndex: 1 };
+  const weeks = await db.weeks.where("programId").equals(existing.id).toArray();
+  const slotIds = new Set(weeks.flatMap((week) => week.slots.map((slot) => slot.id)));
+  const activeIds = (await db.sessions.toArray())
+    .filter(
+      (session) =>
+        session.status === "active" && session.slotId != null && slotIds.has(session.slotId),
+    )
+    .map((session) => session.id);
+  if (activeIds.length) await db.sessions.bulkDelete(activeIds);
+  if (weeks.length) await db.weeks.bulkDelete(weeks.map((week) => week.id));
+  await db.programs.put(next);
+  await db.weeks.put(newWeek(next, 1));
+  return next;
 }
 
 async function keepOneMinmax(activeProgramId?: string) {
