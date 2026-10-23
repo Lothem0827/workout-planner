@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { SettingsIcon } from "lucide-react";
+import { SettingsIcon, Trash2Icon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { MonthCalendar } from "@/components/month-calendar";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ export default function ProgressPage() {
   const gym = useGym();
   const [cursor, setCursor] = useState(() => new Date());
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [confirm, setConfirm] = useState<"plan" | "data" | null>(null);
+  const [confirm, setConfirm] = useState<"plan" | "data" | { pr: string } | null>(null);
   const [pending, setPending] = useState(false);
   const trained = useMemo(
     () => new Set(gym.sessions.filter((session) => session.status === "finished").map((session) => session.date)),
@@ -55,7 +55,8 @@ export default function ProgressPage() {
     setPending(true);
     try {
       if (confirm === "plan" && gym.program) await gym.deleteProgram(gym.program.id);
-      if (confirm === "data") await gym.clearAllData();
+      else if (confirm === "data") await gym.clearAllData();
+      else if (typeof confirm === "object") await gym.ignorePr(confirm.pr);
     } finally {
       setPending(false);
       setConfirm(null);
@@ -102,8 +103,8 @@ export default function ProgressPage() {
           ) : (
             <ul className="flex flex-col gap-3">
               {records.map(({ id, record, lib, next }) => (
-                <li key={id}>
-                  <Link href={`/progress/${id}`} className="flex flex-col gap-1">
+                <li key={id} className="flex items-start gap-2">
+                  <Link href={`/progress/${id}`} className="flex min-w-0 flex-1 flex-col gap-1">
                     <span className="font-medium">{lib?.name ?? "Exercise"}</span>
                     <span className="text-sm text-muted-foreground">
                       Best set {formatWeight(record.weight, gym.settings.unit)} × {record.reps}
@@ -113,6 +114,15 @@ export default function ProgressPage() {
                       <span className="text-sm text-muted-foreground">{nextTargetLine(next, gym.settings.unit)}</span>
                     ) : null}
                   </Link>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`Remove ${lib?.name ?? "exercise"} record`}
+                    onClick={() => setConfirm({ pr: id })}
+                  >
+                    <Trash2Icon />
+                  </Button>
                 </li>
               ))}
             </ul>
@@ -144,17 +154,23 @@ export default function ProgressPage() {
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>
-              {confirm === "plan" ? `Delete ${gym.program?.name ?? "workout plan"}` : "Clear all data"}
+              {confirm === "plan"
+                ? `Delete ${gym.program?.name ?? "workout plan"}`
+                : confirm === "data"
+                  ? "Clear all data"
+                  : "Remove this record?"}
             </DrawerTitle>
             <DrawerDescription>
               {confirm === "plan"
                 ? "This removes the plan and its current week. Finished workouts stay in your log."
-                : "Workouts, programs, and custom exercises will be removed. This cannot be undone."}
+                : confirm === "data"
+                  ? "Workouts, programs, and custom exercises will be removed. This cannot be undone."
+                  : "The set stays in your log. The next-best set becomes the PR."}
             </DrawerDescription>
           </DrawerHeader>
           <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
             <Button type="button" variant="destructive" className="w-full" disabled={pending} onClick={() => void confirmAction()}>
-              {confirm === "plan" ? "Delete" : "Clear"}
+              {confirm === "plan" ? "Delete" : confirm === "data" ? "Clear" : "Remove"}
             </Button>
             <Button type="button" variant="outline" className="w-full" disabled={pending} onClick={() => setConfirm(null)}>
               Cancel

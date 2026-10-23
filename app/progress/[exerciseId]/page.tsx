@@ -1,10 +1,12 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 import { StackHeader } from "@/components/stack-header";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGym } from "@/lib/gym";
@@ -35,6 +37,13 @@ export default function ExerciseProgressPage({
         gym.sessions,
       )
     : null;
+  const [notes, setNotes] = useState(lib?.notes ?? "");
+  const [confirm, setConfirm] = useState(false);
+  const [pending, setPending] = useState(false);
+
+  useEffect(() => {
+    setNotes(lib?.notes ?? "");
+  }, [lib?.notes]);
 
   if (!gym.ready) {
     return (
@@ -61,6 +70,11 @@ export default function ExerciseProgressPage({
               Best set {record.best ? `${formatWeight(record.weight, gym.settings.unit)} × ${record.reps}` : "—"}
             </CardDescription>
             {next != null ? <p>{nextTargetLine(next, gym.settings.unit)}</p> : null}
+            {record.best ? (
+              <Button type="button" variant="ghost" className="mt-2 w-fit text-destructive" onClick={() => setConfirm(true)}>
+                Remove record
+              </Button>
+            ) : null}
           </CardHeader>
           <CardContent>
             {points.length ? (
@@ -83,7 +97,53 @@ export default function ExerciseProgressPage({
             )}
           </CardContent>
         </Card>
+        <label className="flex flex-col gap-1 text-sm text-muted-foreground">
+          <span>Notes</span>
+          <textarea
+            rows={3}
+            value={notes}
+            onChange={(event) => setNotes(event.target.value)}
+            onBlur={() => {
+              if (notes.trim() !== (lib?.notes ?? "").trim()) void gym.saveExerciseNotes(exerciseId, notes);
+            }}
+            className="min-h-16 w-full resize-y rounded-lg border border-input bg-transparent px-2.5 py-1 text-base text-foreground transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30"
+          />
+        </label>
       </div>
+      <Drawer
+        open={confirm}
+        onOpenChange={(open) => {
+          if (!open && !pending) setConfirm(false);
+        }}
+        showSwipeHandle
+      >
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Remove this record?</DrawerTitle>
+            <DrawerDescription>The set stays in your log. The next-best set becomes the PR.</DrawerDescription>
+          </DrawerHeader>
+          <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <Button
+              type="button"
+              variant="destructive"
+              className="w-full"
+              disabled={pending}
+              onClick={() => {
+                setPending(true);
+                void gym.ignorePr(exerciseId).finally(() => {
+                  setPending(false);
+                  setConfirm(false);
+                });
+              }}
+            >
+              Remove
+            </Button>
+            <Button type="button" variant="outline" className="w-full" disabled={pending} onClick={() => setConfirm(false)}>
+              Cancel
+            </Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </main>
   );
 }

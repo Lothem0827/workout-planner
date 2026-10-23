@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   ArrowLeftRightIcon,
@@ -28,12 +28,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  applyWarmupWeights,
   e1rm,
   lastLoggedExercise,
+  orderSets,
   restMs,
   restOptions,
   suggestedWeightKg,
   uid,
+  workingNumber,
 } from "@/lib/logic";
 import { catalogGifUrl } from "@/lib/media";
 import { demoUrlFor, youtubeEmbed } from "@/lib/minmax";
@@ -100,6 +103,7 @@ export function ExerciseSlide({
   onLoggedSet,
   skipRest,
   onSkipRest,
+  onNotes,
   preview = false,
 }: {
   exercise: SessionExercise;
@@ -116,6 +120,7 @@ export function ExerciseSlide({
   onLoggedSet: (durationMs: number) => void;
   skipRest: boolean;
   onSkipRest: (skip: boolean) => void;
+  onNotes?: (notes: string) => void;
   preview?: boolean;
 }) {
   const lib = map.get(exercise.exerciseId);
@@ -123,7 +128,7 @@ export function ExerciseSlide({
   const previous = lastLoggedExercise(exercise.exerciseId, sessions);
   const previousSets =
     previous?.sets.filter(
-      (set) => set.done && set.weight != null && set.reps != null,
+      (set) => set.kind !== "warmup" && set.done && set.weight != null && set.reps != null,
     ) ?? [];
   const suggestion = suggestedWeightKg(exercise, lib, sessions);
   const priorRir = (setIndex: number) =>
@@ -147,6 +152,11 @@ export function ExerciseSlide({
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [restOpen, setRestOpen] = useState(false);
   const [focusedSetId, setFocusedSetId] = useState<string | null>(null);
+  const [typeSetId, setTypeSetId] = useState<string | null>(null);
+  const [notes, setNotes] = useState(lib?.notes ?? "");
+  useEffect(() => {
+    setNotes(lib?.notes ?? "");
+  }, [exercise.exerciseId, lib?.notes]);
   const e1rmSet =
     exercise.sets.find((set) => set.id === focusedSetId) ??
     exercise.sets.find((set) => !set.done);
@@ -245,6 +255,20 @@ export function ExerciseSlide({
         {exercise.notes ? (
           <p className="text-sm text-foreground">{exercise.notes}</p>
         ) : null}
+        {preview ? (
+          lib?.notes ? <p className="text-sm text-muted-foreground">{lib.notes}</p> : null
+        ) : (
+          <textarea
+            rows={2}
+            value={notes}
+            placeholder="Notes"
+            onChange={(event) => setNotes(event.target.value)}
+            onBlur={() => {
+              if (notes.trim() !== (lib?.notes ?? "").trim()) onNotes?.(notes);
+            }}
+            className="min-h-16 w-full resize-y rounded-lg border border-input bg-transparent px-2.5 py-1 text-base text-foreground transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30"
+          />
+        )}
         <button
           type="button"
           className="flex items-center justify-between gap-3 text-sm text-muted-foreground"
@@ -371,7 +395,9 @@ export function ExerciseSlide({
         <div className="flex flex-col gap-1.5">
           {exercise.sets.map((set, setIndex) => {
             const current = set.id === focusedSetId;
-            const prior = previousSets[setIndex];
+            const work = workingNumber(exercise.sets, setIndex);
+            const warmup = set.kind === "warmup";
+            const prior = work > 0 ? previousSets[work - 1] : undefined;
             const valueClass = cn(
               "w-full bg-transparent text-center text-2xl tabular-nums outline-none placeholder:text-muted-foreground",
               current
@@ -387,15 +413,34 @@ export function ExerciseSlide({
                 )}
                 onClick={() => setFocusedSetId(set.id)}
               >
-                <span
-                  className={cn(
-                    "text-lg",
-                    current ? "text-foreground" : "text-muted-foreground",
-                  )}
-                >
-                  {setIndex + 1}
-                  {set.pr ? " PR" : ""}
-                </span>
+                {preview ? (
+                  <span
+                    className={cn(
+                      "text-lg",
+                      warmup ? "font-medium text-recovery-recovering" : current ? "text-foreground" : "text-muted-foreground",
+                    )}
+                  >
+                    {work || "W"}
+                    {set.pr ? " PR" : ""}
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    className={cn(
+                      "text-left text-lg",
+                      warmup ? "font-medium text-recovery-recovering" : current ? "text-foreground" : "text-muted-foreground",
+                    )}
+                    aria-label="Set type"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setFocusedSetId(set.id);
+                      setTypeSetId(set.id);
+                    }}
+                  >
+                    {work || "W"}
+                    {set.pr ? " PR" : ""}
+                  </button>
+                )}
                 <div className="flex flex-col items-center">
                   <WeightInput
                     aria-label={`Set ${setIndex + 1} load`}
@@ -407,12 +452,19 @@ export function ExerciseSlide({
                     onWeight={(weight) => {
                       if (preview) return;
                       setFocusedSetId(set.id);
-                      onPatch((item) => ({
-                        ...item,
-                        sets: item.sets.map((row) =>
-                          row.id === set.id ? { ...row, weight } : row,
+                      onPatch((item) =>
+                        applyWarmupWeights(
+                          {
+                            ...item,
+                            sets: item.sets.map((row) =>
+                              row.id === set.id
+                                ? { ...row, weight, ...(warmup ? { weightAuto: false } : {}) }
+                                : row,
+                            ),
+                          },
+                          suggestion?.weight,
                         ),
-                      }));
+                      );
                     }}
                     className={valueClass}
                   />
@@ -475,7 +527,7 @@ export function ExerciseSlide({
               aria-label="Add set"
               className="flex justify-center"
               onClick={() => {
-                const last = exercise.sets.at(-1);
+                const last = [...exercise.sets].reverse().find((row) => row.kind !== "warmup") ?? exercise.sets.at(-1);
                 onPatch((item) => ({
                   ...item,
                   sets: [
@@ -505,8 +557,12 @@ export function ExerciseSlide({
               type="button"
               className="justify-self-end text-sm disabled:opacity-40"
               disabled={
-                exercise.sets.length <= exercise.setsTarget ||
-                Boolean(exercise.sets.at(-1)?.done)
+                (() => {
+                  const last = exercise.sets.at(-1);
+                  const working = exercise.sets.filter((row) => row.kind !== "warmup").length;
+                  if (!last || last.done) return true;
+                  return last.kind !== "warmup" && working <= exercise.setsTarget;
+                })()
               }
               onClick={() => {
                 onPatch((item) => ({ ...item, sets: item.sets.slice(0, -1) }));
@@ -517,6 +573,75 @@ export function ExerciseSlide({
           </div>
         )}
       </div>
+      {typeSetId && !preview ? (
+        <Drawer
+          open
+          onOpenChange={(open) => {
+            if (!open) setTypeSetId(null);
+          }}
+          showSwipeHandle
+        >
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Set type</DrawerTitle>
+            </DrawerHeader>
+            <div className="flex flex-col gap-1 px-4 pb-4">
+              {(["working", "warmup"] as const).map((kind) => {
+                const current = exercise.sets.find((row) => row.id === typeSetId);
+                const selected = kind === "warmup" ? current?.kind === "warmup" : current?.kind !== "warmup";
+                const work =
+                  current && current.kind !== "warmup"
+                    ? workingNumber(exercise.sets, exercise.sets.indexOf(current))
+                    : exercise.sets.filter((row) => row.kind !== "warmup").length + 1;
+                return (
+                  <Button
+                    key={kind}
+                    type="button"
+                    variant={selected ? "secondary" : "ghost"}
+                    className="h-12 w-full justify-between text-base"
+                    onClick={() => {
+                      onPatch((item) => {
+                        const source = item.sets.find((row) => row.id === typeSetId);
+                        const otherWorking = item.sets.find(
+                          (row) =>
+                            row.id !== typeSetId &&
+                            row.kind !== "warmup" &&
+                            row.weight != null &&
+                            row.weight > 0,
+                        );
+                        return applyWarmupWeights(
+                          {
+                            ...item,
+                            sets: orderSets(
+                              item.sets.map((row) =>
+                                row.id !== typeSetId
+                                  ? row
+                                  : kind === "warmup"
+                                    ? { ...row, kind: "warmup", weightAuto: true }
+                                    : { ...row, kind: undefined, weightAuto: undefined },
+                              ),
+                            ),
+                          },
+                          suggestion?.weight ?? otherWorking?.weight ?? source?.weight,
+                        );
+                      });
+                      setTypeSetId(null);
+                    }}
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className={kind === "warmup" ? "w-6 font-medium text-recovery-recovering" : "w-6"}>
+                        {kind === "warmup" ? "W" : work || 1}
+                      </span>
+                      {kind === "warmup" ? "Warm-up" : "Working"}
+                    </span>
+                    {selected ? <CheckIcon /> : null}
+                  </Button>
+                );
+              })}
+            </div>
+          </DrawerContent>
+        </Drawer>
+      ) : null}
       {restOpen && !preview ? (
         <RestTimerSheet
           name={name}
@@ -576,7 +701,7 @@ export function RestTimerSheet({
             return (
               <li key={set.id} className="flex items-center gap-3">
                 <span className="w-4 text-sm text-muted-foreground tabular-nums">
-                  {index + 1}
+                  {workingNumber(sets, index) || "W"}
                 </span>
                 <Select
                   items={options}

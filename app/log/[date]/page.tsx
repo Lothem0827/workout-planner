@@ -9,7 +9,7 @@ import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGym } from "@/lib/gym";
-import { formatDate } from "@/lib/logic";
+import { formatDate, groupByPrimary, workingNumber } from "@/lib/logic";
 import { WeightInput } from "@/components/weight-input";
 import type { Session } from "@/lib/types";
 
@@ -54,16 +54,20 @@ export default function LogDatePage({ params }: { params: Promise<{ date: string
               <CardTitle>{session.name}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
-              {session.exercises.map((exercise) => (
+              {groupByPrimary(session.exercises, gym.map).map((group) => (
+                <div key={group.key} className="flex flex-col gap-3">
+                  <h3 className="text-sm font-medium text-muted-foreground">{group.label}</h3>
+                  {group.exercises.map((exercise) => (
                 <div key={exercise.id} className="flex flex-col gap-2">
                   <h3 className="text-sm font-semibold">{gym.map.get(exercise.exerciseId)?.name}</h3>
                   {exercise.sets.map((set, index) => {
-                    const rir = index === 0 ? exercise.rirSet1 : exercise.rirSet2;
+                    const work = workingNumber(exercise.sets, index);
+                    const rir = work === 1 ? exercise.rirSet1 : work > 1 ? exercise.rirSet2 : undefined;
                     return (
                       <div key={set.id} className="grid grid-cols-[4.5rem_1fr_1fr] items-center gap-2">
                         <span className="text-sm">
-                          {index + 1}{set.pr ? " PR" : ""}
-                          {rir ? <span className="block text-xs text-muted-foreground">RIR {rir}</span> : exercise.rpe ? <span className="block text-xs text-muted-foreground">RPE {exercise.rpe}</span> : null}
+                          {work || "W"}{set.pr ? " PR" : ""}
+                          {rir ? <span className="block text-xs text-muted-foreground">RIR {rir}</span> : work && exercise.rpe ? <span className="block text-xs text-muted-foreground">RPE {exercise.rpe}</span> : null}
                         </span>
                         <WeightInput
                           as={Input}
@@ -108,6 +112,8 @@ export default function LogDatePage({ params }: { params: Promise<{ date: string
                       </div>
                     );
                   })}
+                </div>
+                  ))}
                 </div>
               ))}
             </CardContent>

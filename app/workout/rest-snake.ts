@@ -1,5 +1,6 @@
 export const GRID = 12;
 export const TICK_MS = 240;
+export const TICK_LEVELS = [240, 120, 80];
 
 export type Dir = "up" | "down" | "left" | "right";
 
@@ -11,6 +12,7 @@ export type SnakeState = {
   queued: Dir | null;
   food: Cell;
   started: boolean;
+  boost: number;
 };
 
 const OPPOSITE: Record<Dir, Dir> = {
@@ -54,7 +56,16 @@ export function createSnake(random: () => number = Math.random): SnakeState {
     queued: null,
     food: spawnFood(snake, random) ?? { x: 9, y: 5 },
     started: false,
+    boost: 0,
   };
+}
+
+export function tickMs(state: SnakeState) {
+  return TICK_LEVELS[Math.min(state.boost, TICK_LEVELS.length - 1)] ?? TICK_MS;
+}
+
+export function bumpBoost(state: SnakeState): SnakeState {
+  return { ...state, boost: Math.min(state.boost + 1, TICK_LEVELS.length - 1) };
 }
 
 function resetPlaying(random: () => number): SnakeState {
@@ -86,5 +97,5 @@ export function step(state: SnakeState, random: () => number = Math.random): Sna
   const snake = [next, ...body];
   const food = eating ? spawnFood(snake, random) : state.food;
   if (!food) return resetPlaying(random);
-  return { snake, dir, queued: null, food, started: true };
+  return { snake, dir, queued: null, food, started: true, boost: state.boost };
 }

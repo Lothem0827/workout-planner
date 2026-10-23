@@ -11,6 +11,7 @@ import {
 import { db, seedIfEmpty } from "./db";
 import {
   applyPrs,
+  bestE1rm,
   byIdMap,
   carryUnloggedExercises,
   exerciseTitle,
@@ -51,6 +52,8 @@ interface GymValue {
     equipment: string;
     pattern: Pattern;
   }) => Promise<LibraryExercise>;
+  saveExerciseNotes: (id: string, notes: string) => Promise<void>;
+  ignorePr: (exerciseId: string) => Promise<void>;
   replaceInProgram: (dayId: string, fromId: string, toId: string) => Promise<void>;
   deleteSession: (sessionId: string) => Promise<void>;
   deleteProgram: (id: string) => Promise<void>;
@@ -305,6 +308,38 @@ export function GymProvider({ children }: { children: ReactNode }) {
       await db.exercises.put(exercise);
       await refresh();
       return exercise;
+    },
+    async saveExerciseNotes(id, notes) {
+      const stored = await db.exercises.get(id);
+      if (!stored) return;
+      const next = { ...stored };
+      const text = notes.trim();
+      if (text) next.notes = text;
+      else delete next.notes;
+      await db.exercises.put(next);
+      await refresh();
+    },
+    async ignorePr(exerciseId) {
+      await enqueue(async () => {
+        const current = await loadAll();
+        const record = bestE1rm(exerciseId, current.sessions);
+        if (!record.sessionId || !record.setId) return;
+        const next = current.sessions.map((session) => {
+          if (session.id !== record.sessionId) return session;
+          return {
+            ...session,
+            exercises: session.exercises.map((exercise) => ({
+              ...exercise,
+              sets: exercise.sets.map((set) =>
+                set.id === record.setId ? { ...set, ignoreForPr: true, pr: false } : set,
+              ),
+            })),
+          };
+        });
+        applyPrs(next);
+        await db.sessions.bulkPut(next);
+        await refresh();
+      });
     },
     async replaceInProgram(dayId, fromId, toId) {
       if (!program) return;

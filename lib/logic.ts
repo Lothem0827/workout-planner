@@ -11,7 +11,7 @@ import type {
   WeekPlan,
   WeekSlot,
 } from "./types";
-import { LOWER, MUSCLE_LABEL } from "./types";
+import { LOWER, MUSCLE_LABEL, MUSCLES } from "./types";
 import { formatLoad, formatWeight } from "./units";
 
 export function uid() {
@@ -335,6 +335,23 @@ export function pickToday(week: WeekPlan | null, map: Map<string, LibraryExercis
   )[0];
 }
 
+function isWorkingSet(set: SetLog) {
+  return set.kind !== "warmup";
+}
+
+export function setCountsForPr(
+  set: SetLog,
+): set is SetLog & { weight: number; reps: number } {
+  return (
+    isWorkingSet(set) &&
+    set.done &&
+    !set.ignoreForPr &&
+    set.weight != null &&
+    set.reps != null &&
+    set.weight > 0
+  );
+}
+
 export function lastLoggedExercise(exerciseId: string, sessions: Session[]) {
   const previous = [...finishedSessions(sessions)]
     .reverse()
@@ -342,10 +359,27 @@ export function lastLoggedExercise(exerciseId: string, sessions: Session[]) {
       session.exercises.some(
         (exercise) =>
           exercise.exerciseId === exerciseId &&
-          exercise.sets.some((set) => set.done && set.weight != null && set.reps != null),
+          exercise.sets.some(
+            (set) => isWorkingSet(set) && set.done && set.weight != null && set.reps != null,
+          ),
       ),
     );
   return previous?.exercises.find((item) => item.exerciseId === exerciseId) ?? null;
+}
+
+export function lastLoggedVariant(plannedExerciseId: string, sessions: Session[]) {
+  for (const session of [...finishedSessions(sessions)].reverse()) {
+    const match = session.exercises.find(
+      (exercise) =>
+        (exercise.exerciseId === plannedExerciseId ||
+          exercise.swappedFromExerciseId === plannedExerciseId) &&
+        exercise.sets.some(
+          (set) => isWorkingSet(set) && set.done && set.weight != null && set.reps != null,
+        ),
+    );
+    if (match) return match;
+  }
+  return null;
 }
 
 export function lastPerformance(
@@ -354,7 +388,7 @@ export function lastPerformance(
 ) {
   return (
     lastLoggedExercise(exerciseId, sessions)?.sets.filter(
-      (set) => set.done && set.weight != null && set.reps != null,
+      (set) => isWorkingSet(set) && set.done && set.weight != null && set.reps != null,
     ) ?? []
   );
 }
@@ -375,7 +409,7 @@ export function suggestedWeightKg(
   const last = lastLoggedExercise(exercise.exerciseId, sessions);
   if (!last || !lib) return null;
   const previous = last.sets.filter(
-    (set) => set.done && set.weight != null && set.reps != null,
+    (set) => isWorkingSet(set) && set.done && set.weight != null && set.reps != null,
   );
   if (!previous.length) return null;
   const top = Math.max(...previous.map((set) => set.weight ?? 0));
@@ -406,7 +440,7 @@ export function applyPrs(sessions: Session[]) {
     for (const exercise of session.exercises) {
       for (const set of exercise.sets) {
         set.pr = false;
-        if (!set.done || set.weight == null || set.reps == null || set.weight <= 0) continue;
+        if (!setCountsForPr(set)) continue;
         const estimate = e1rm(set.weight, set.reps);
         const prior = best.get(exercise.exerciseId) ?? 0;
         if (estimate > prior) {
@@ -422,21 +456,25 @@ export function bestE1rm(exerciseId: string, sessions: Session[]) {
   let best = 0;
   let weight = 0;
   let reps = 0;
+  let sessionId: string | undefined;
+  let setId: string | undefined;
   for (const session of finishedSessions(sessions)) {
     for (const exercise of session.exercises) {
       if (exercise.exerciseId !== exerciseId) continue;
       for (const set of exercise.sets) {
-        if (!set.done || set.weight == null || set.reps == null) continue;
+        if (!setCountsForPr(set) || set.weight == null || set.reps == null) continue;
         const estimate = e1rm(set.weight, set.reps);
         if (estimate > best) {
           best = estimate;
           weight = set.weight;
           reps = set.reps;
+          sessionId = session.id;
+          setId = set.id;
         }
       }
     }
   }
-  return { best, weight, reps };
+  return { best, weight, reps, sessionId, setId };
 }
 
 export function chartPoints(exerciseId: string, sessions: Session[]) {
@@ -446,13 +484,51 @@ export function chartPoints(exerciseId: string, sessions: Session[]) {
     for (const exercise of session.exercises) {
       if (exercise.exerciseId !== exerciseId) continue;
       for (const set of exercise.sets) {
-        if (!set.done || set.weight == null || set.reps == null) continue;
+        if (!setCountsForPr(set) || set.weight == null || set.reps == null) continue;
         best = Math.max(best, e1rm(set.weight, set.reps));
       }
     }
     if (best > 0) points.push({ date: session.date, value: best });
   }
   return points;
+}
+
+const WARMUP_PCT = [0.5, 0.7, 0.85];
+
+export function warmupWeightKg(workingKg: number, warmupIndex: number) {
+  const pct = WARMUP_PCT[Math.min(warmupIndex, WARMUP_PCT.length - 1)] ?? 0.85;
+  return Math.round((workingKg * pct) / 2.5) * 2.5;
+}
+
+export function applyWarmupWeights(exercise: SessionExercise, fallbackKg?: number | null) {
+  const working = exercise.sets.find(
+    (set) => isWorkingSet(set) && set.weight != null && set.weight > 0,
+  );
+  const base = working?.weight ?? fallbackKg;
+  if (base == null || base <= 0) return exercise;
+  let index = 0;
+  return {
+    ...exercise,
+    sets: exercise.sets.map((set) => {
+      if (set.kind !== "warmup") return set;
+      const warmupIndex = index;
+      index += 1;
+      if (set.weightAuto === false) return set;
+      return { ...set, weight: warmupWeightKg(base, warmupIndex), weightAuto: true };
+    }),
+  };
+}
+
+export function orderSets(sets: SetLog[]) {
+  return [
+    ...sets.filter((set) => set.kind === "warmup"),
+    ...sets.filter((set) => set.kind !== "warmup"),
+  ];
+}
+
+export function workingNumber(sets: SetLog[], index: number) {
+  if (sets[index]?.kind === "warmup") return 0;
+  return sets.slice(0, index + 1).filter(isWorkingSet).length;
 }
 
 const REST_PRESET_MS = [30_000, 45_000, 60_000, 90_000, 120_000, 150_000, 180_000, 240_000, 300_000];
@@ -541,11 +617,14 @@ export function sessionExerciseFromPlanned(
   sessions: Session[],
   map: Map<string, LibraryExercise>,
 ): SessionExercise {
-  const lib = map.get(planned.exerciseId);
+  const prior = lastLoggedVariant(planned.exerciseId, sessions);
+  const exerciseId = prior?.exerciseId ?? planned.exerciseId;
+  const lib = map.get(exerciseId);
   const count = workingSetCount(planned);
   const draft: SessionExercise = {
     id: uid(),
-    exerciseId: planned.exerciseId,
+    exerciseId,
+    ...(exerciseId !== planned.exerciseId ? { swappedFromExerciseId: planned.exerciseId } : {}),
     ...copyPrescription(planned),
     setsTarget: count,
     repMin: planned.repMin,
@@ -670,7 +749,7 @@ export function volumeKg(session: Session) {
     return (
       total +
       exercise.sets.reduce((sum, set) => {
-        if (!set.done || set.weight == null || set.reps == null) return sum;
+        if (!isWorkingSet(set) || !set.done || set.weight == null || set.reps == null) return sum;
         return sum + set.weight * set.reps;
       }, 0)
     );
@@ -699,4 +778,23 @@ export function swapRank(
       return { exercise, rank };
     })
     .sort((a, b) => a.rank - b.rank || a.exercise.name.localeCompare(b.exercise.name));
+}
+
+export function groupByPrimary(exercises: SessionExercise[], map: Map<string, LibraryExercise>) {
+  const buckets = new Map<Muscle | "other", SessionExercise[]>();
+  for (const exercise of exercises) {
+    const key = map.get(exercise.exerciseId)?.primary ?? "other";
+    const list = buckets.get(key) ?? [];
+    list.push(exercise);
+    buckets.set(key, list);
+  }
+  const groups: { key: string; label: string; exercises: SessionExercise[] }[] = MUSCLES.flatMap(
+    (muscle) => {
+      const items = buckets.get(muscle);
+      return items?.length ? [{ key: muscle, label: MUSCLE_LABEL[muscle], exercises: items }] : [];
+    },
+  );
+  const other = buckets.get("other");
+  if (other?.length) groups.push({ key: "other", label: "Other", exercises: other });
+  return groups;
 }

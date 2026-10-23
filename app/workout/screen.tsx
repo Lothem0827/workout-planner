@@ -588,6 +588,9 @@ function SessionScreen() {
               const current = sessionRef.current ?? session;
               void update({ ...current, skipRest: skip || undefined });
             }}
+            onNotes={(text) => {
+              if (!isPreview) void gym.saveExerciseNotes(exercise.exerciseId, text);
+            }}
             preview={isPreview}
           />
         ))}

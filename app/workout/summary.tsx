@@ -12,7 +12,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { doneSetCount, formatDate, primariesOf, volumeKg } from "@/lib/logic";
+import { doneSetCount, formatDate, groupByPrimary, primariesOf, volumeKg, workingNumber } from "@/lib/logic";
 import { formatLoad, formatWeight } from "@/lib/units";
 import {
   MUSCLE_LABEL,
@@ -55,7 +55,7 @@ export function WorkoutSummary({
     hour: "numeric",
     minute: "2-digit",
   });
-  const canDiscard = logged.length === 0 && onDiscard != null;
+  const canDiscard = onDiscard != null;
 
   return (
     <main className="-mb-[env(safe-area-inset-bottom)] flex h-dvh flex-col overflow-hidden bg-background">
@@ -97,7 +97,9 @@ export function WorkoutSummary({
                       {exercise.sets.map((set, index) =>
                         set.done ? (
                           <li key={set.id} className="flex items-baseline gap-3 text-sm">
-                            <span className="w-5 shrink-0 text-muted-foreground tabular-nums">{index + 1}</span>
+                            <span className="w-5 shrink-0 text-muted-foreground tabular-nums">
+                              {workingNumber(exercise.sets, index) || "W"}
+                            </span>
                             <span className="tabular-nums">{setLine(set, unit)}</span>
                             {set.pr ? <span className="text-xs font-medium">PR</span> : null}
                           </li>
@@ -171,25 +173,6 @@ export function WorkoutSummary({
       </Drawer>
     </main>
   );
-}
-
-function groupByPrimary(logged: SessionExercise[], map: Map<string, LibraryExercise>) {
-  const buckets = new Map<Muscle | "other", SessionExercise[]>();
-  for (const exercise of logged) {
-    const key = map.get(exercise.exerciseId)?.primary ?? "other";
-    const list = buckets.get(key) ?? [];
-    list.push(exercise);
-    buckets.set(key, list);
-  }
-  const groups: { key: string; label: string; exercises: SessionExercise[] }[] = MUSCLES.flatMap((muscle) => {
-    const exercises = buckets.get(muscle);
-    return exercises?.length
-      ? [{ key: muscle, label: MUSCLE_LABEL[muscle], exercises }]
-      : [];
-  });
-  const other = buckets.get("other");
-  if (other?.length) groups.push({ key: "other", label: "Other", exercises: other });
-  return groups;
 }
 
 function Stat({ label, value }: { label: string; value: string }) {

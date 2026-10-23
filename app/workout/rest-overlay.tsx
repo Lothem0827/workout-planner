@@ -4,7 +4,7 @@ import { ChevronLeftIcon } from "lucide-react";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { createSnake, GRID, queueDir, step, TICK_MS, type Dir, type SnakeState } from "./rest-snake";
+import { bumpBoost, createSnake, GRID, queueDir, step, tickMs, type Dir, type SnakeState } from "./rest-snake";
 
 const KEY_DIR: Record<string, Dir> = {
   ArrowUp: "up",
@@ -34,17 +34,31 @@ export function RestOverlay({
   onAdd: () => void;
   onSkip: () => void;
 }) {
+  const SNAKE_BEST = "workout-snake-best";
   const [state, setState] = useState<SnakeState>(createSnake);
+  const [best, setBest] = useState(0);
   const swipe = useRef<{ x: number; y: number } | null>(null);
+  const lastDir = useRef<{ dir: Dir; at: number } | null>(null);
   const finalStretch = secondsLeft <= 10;
+
+  useEffect(() => {
+    const stored = Number(window.localStorage.getItem(SNAKE_BEST));
+    if (Number.isFinite(stored) && stored > 0) setBest(stored);
+  }, []);
+
+  useEffect(() => {
+    if (state.snake.length <= best) return;
+    setBest(state.snake.length);
+    window.localStorage.setItem(SNAKE_BEST, String(state.snake.length));
+  }, [state.snake.length, best]);
 
   useEffect(() => {
     if (!state.started || finalStretch) return;
     const timer = window.setInterval(() => {
       setState((current) => step(current));
-    }, TICK_MS);
+    }, tickMs(state));
     return () => window.clearInterval(timer);
-  }, [state.started, finalStretch]);
+  }, [state.started, state.boost, finalStretch]);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -53,6 +67,13 @@ export function RestOverlay({
       const target = event.target;
       if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return;
       event.preventDefault();
+      const now = Date.now();
+      const prev = lastDir.current;
+      lastDir.current = { dir, at: now };
+      if (prev && prev.dir === dir && now - prev.at < 400) {
+        setState(bumpBoost);
+        return;
+      }
       setState((current) => queueDir(current, dir));
     }
     window.addEventListener("keydown", onKey);
@@ -61,6 +82,13 @@ export function RestOverlay({
 
   function turn(dir: Dir) {
     if (finalStretch) return;
+    const now = Date.now();
+    const prev = lastDir.current;
+    lastDir.current = { dir, at: now };
+    if (prev && prev.dir === dir && now - prev.at < 400) {
+      setState(bumpBoost);
+      return;
+    }
     setState((current) => queueDir(current, dir));
   }
 
@@ -148,7 +176,12 @@ export function RestOverlay({
       </div>
       <div className="shrink-0 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <p className="pb-2 text-center text-sm tabular-nums text-white/70">
-          {state.started ? `Length ${state.snake.length}` : "\u00a0"}
+          {[
+            state.started ? `Length ${state.snake.length}` : null,
+            best > 0 ? `Best ${best}` : null,
+          ]
+            .filter(Boolean)
+            .join(" · ") || "\u00a0"}
         </p>
         <div className="grid grid-cols-[1fr_1.4fr_1fr] gap-2">
           <Button type="button" variant="outline" className="h-12 text-base" onClick={onSubtract}>

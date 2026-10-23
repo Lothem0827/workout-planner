@@ -38,6 +38,7 @@ export interface LibraryExercise {
   equipment: string;
   pattern: Pattern;
   custom?: boolean;
+  notes?: string;
 }
 
 export interface Prescription {
@@ -107,6 +108,9 @@ export interface SetLog {
   done: boolean;
   pr?: boolean;
   restMs?: number;
+  ignoreForPr?: boolean;
+  kind?: "warmup";
+  weightAuto?: boolean;
 }
 
 export interface SessionExercise extends Prescription {
